@@ -14,7 +14,7 @@
     } else {
       var Backbone = this.Backbone,
         _ = this._;
-      Capsule = this.Capsule = {};
+      Capsule = this.Capsule || (this.Capsule = {});
     }
 
 

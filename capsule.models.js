@@ -18,7 +18,7 @@
       var Backbone = this.Backbone,
         _ = this._;
       
-      Capsule = this.Capsule = {};
+      Capsule = this.Capsule || (this.Capsule = {});
     }
 
   Capsule.models = {};
@@ -36,6 +36,21 @@
       this.bind('change:id', function (model) {
         if (!Capsule.models[this.id]) Capsule.models[model.id] = self;
       });
+      this.bind('change', _(this.publishChange).bind(this));
+    },
+    
+    addChildCollection: function (label, constructor) {
+      this[label] = new constructor();
+      this[label].bind('publish', _(this.publishProxy).bind(this));
+      this[label].bind('remove', _(this.publishRemove).bind(this));
+      this[label].bind('add', _(this.publishAdd).bind(this));
+      this[label].parent = this;
+    },
+    
+    addChildModel: function (label, constructor) {
+      this[label] = new constructor();
+      this[label].bind('publish', _(this.publishProxy).bind(this));
+      this[label].parent = this;
     },
     
     modelGetter: function (id) {
@@ -96,7 +111,7 @@
               _.each(source[key].models, function (value, index) {
                 process(targetObj.collections[key].models[index] = {}, value);
               });
-            } else if (source[key] instanceof Backbone.Model) {
+            } else if (source[key] instanceof Backbone.Model && source[key].parent !== source) {
               targetObj.models = targetObj.models || {};
               process(targetObj.models[key] = {}, value);
             }
