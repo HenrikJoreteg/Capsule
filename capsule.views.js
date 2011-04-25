@@ -45,7 +45,6 @@
         _.each(this.contentBindings, function (selector, key) {
           self.model.bind('change:' + key, function () {
             var el = (selector.length > 0) ? self.$(selector) : $(self.el);
-            
             el.html(self.model.get(key));
           });
         });
