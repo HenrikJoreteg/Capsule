@@ -1,0 +1,304 @@
+<!DOCTYPE html>  <html> <head>   <title>capsule.models.js</title>   <meta http-equiv="content-type" content="text/html; charset=UTF-8">   <link rel="stylesheet" media="all" href="docco.css" /> </head> <body>   <div id="container">     <div id="background"></div>          <table cellpadding="0" cellspacing="0">       <thead>         <tr>           <th class="docs">             <h1>               capsule.models.js             </h1>           </th>           <th class="code">           </th>         </tr>       </thead>       <tbody>                               <tr id="section-1">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-1">&#182;</a>               </div>                            </td>             <td class="code">               <div class="highlight"><pre><span class="p">(</span><span class="kd">function</span><span class="p">(){</span></pre></div>             </td>           </tr>                               <tr id="section-2">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-2">&#182;</a>               </div>               <h2>Module Setup</h2>             </td>             <td class="code">               <div class="highlight"><pre></pre></div>             </td>           </tr>                               <tr id="section-3">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-3">&#182;</a>               </div>               <p>All public Capsule classes and modules will be attached to the <code>Capsule</code> 
+namespace. Exported for both CommonJS and the browser.</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="kd">var</span> <span class="nx">Capsule</span><span class="p">,</span> <span class="nx">Backbone</span><span class="p">,</span> <span class="nx">_</span><span class="p">,</span> <span class="nx">uuid</span><span class="p">,</span> <span class="nx">server</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
+    <span class="k">if</span> <span class="p">(</span><span class="k">typeof</span> <span class="nx">exports</span> <span class="o">!==</span> <span class="s1">&#39;undefined&#39;</span><span class="p">)</span> <span class="p">{</span>
+      <span class="nx">Backbone</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;./backbone&#39;</span><span class="p">);</span>
+      <span class="nx">_</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;underscore&#39;</span><span class="p">).</span><span class="nx">_</span><span class="p">;</span>
+      <span class="nx">uuid</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;../packages/uuid&#39;</span><span class="p">);</span>
+      <span class="nx">Capsule</span> <span class="o">=</span> <span class="nx">exports</span><span class="p">;</span>
+      <span class="nx">server</span> <span class="o">=</span> <span class="kc">true</span><span class="p">;</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+      <span class="nx">Backbone</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">Backbone</span><span class="p">;</span>
+      <span class="nx">_</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">_</span><span class="p">;</span>
+      <span class="nx">Capsule</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">Capsule</span> <span class="o">||</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">Capsule</span> <span class="o">=</span> <span class="p">{});</span>
+    <span class="p">}</span>
+  </pre></div>             </td>           </tr>                               <tr id="section-4">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-4">&#182;</a>               </div>               <p>Our model hash, this is where all instantiated models are stored by id</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nx">Capsule</span><span class="p">.</span><span class="nx">models</span> <span class="o">=</span> <span class="p">{};</span>
+  </pre></div>             </td>           </tr>                               <tr id="section-5">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-5">&#182;</a>               </div>               <h2>Capsule.Model</h2>             </td>             <td class="code">               <div class="highlight"><pre>  </pre></div>             </td>           </tr>                               <tr id="section-6">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-6">&#182;</a>               </div>               <p>Extend the Backbone model with Capsule functionality</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nx">Capsule</span><span class="p">.</span><span class="nx">Model</span> <span class="o">=</span> <span class="nx">Backbone</span><span class="p">.</span><span class="nx">Model</span><span class="p">.</span><span class="nx">extend</span><span class="p">({</span></pre></div>             </td>           </tr>                               <tr id="section-7">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-7">&#182;</a>               </div>               <h3>register</h3>
+
+<p>Register ourselves. This means generate a uuid if we're on the server
+and listen for changes to ID (which you shouldn't really change) this just handles the
+case where our root model is initted on the client, before it has any data. Once it gets
+its <code>id</code> you shouldn't ever change it.</p>
+
+<p>We also bind change so to our <code>publishChange</code> method.</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="nx">register</span><span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+      <span class="kd">var</span> <span class="nx">self</span> <span class="o">=</span> <span class="k">this</span><span class="p">;</span>
+      <span class="k">if</span> <span class="p">(</span><span class="nx">server</span><span class="p">)</span> <span class="p">{</span>
+        <span class="kd">var</span> <span class="nx">id</span> <span class="o">=</span> <span class="nx">uuid</span><span class="p">();</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">id</span> <span class="o">=</span> <span class="nx">id</span><span class="p">;</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">set</span><span class="p">({</span><span class="nx">id</span><span class="o">:</span> <span class="nx">id</span><span class="p">});</span>
+      <span class="p">}</span>
+      <span class="k">if</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">id</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="nx">Capsule</span><span class="p">.</span><span class="nx">models</span><span class="p">[</span><span class="k">this</span><span class="p">.</span><span class="nx">id</span><span class="p">])</span> <span class="nx">Capsule</span><span class="p">.</span><span class="nx">models</span><span class="p">[</span><span class="k">this</span><span class="p">.</span><span class="nx">id</span><span class="p">]</span> <span class="o">=</span> <span class="k">this</span><span class="p">;</span>
+      <span class="k">this</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="s1">&#39;change:id&#39;</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">model</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">Capsule</span><span class="p">.</span><span class="nx">models</span><span class="p">[</span><span class="k">this</span><span class="p">.</span><span class="nx">id</span><span class="p">])</span> <span class="nx">Capsule</span><span class="p">.</span><span class="nx">models</span><span class="p">[</span><span class="nx">model</span><span class="p">.</span><span class="nx">id</span><span class="p">]</span> <span class="o">=</span> <span class="nx">self</span><span class="p">;</span>
+      <span class="p">});</span>
+      <span class="k">this</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="s1">&#39;change&#39;</span><span class="p">,</span> <span class="nx">_</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">publishChange</span><span class="p">).</span><span class="nx">bind</span><span class="p">(</span><span class="k">this</span><span class="p">));</span>
+    <span class="p">},</span>
+    </pre></div>             </td>           </tr>                               <tr id="section-8">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-8">&#182;</a>               </div>               <h3>addChildCollection</h3>
+
+<p>We use this to build our nested model structure. This will ensure
+that <code>publish</code>, <code>add</code>, and <code>remove</code> events will bubble up to our root
+model.</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="nx">addChildCollection</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">label</span><span class="p">,</span> <span class="nx">constructor</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">this</span><span class="p">[</span><span class="nx">label</span><span class="p">]</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">constructor</span><span class="p">();</span>
+      <span class="k">this</span><span class="p">[</span><span class="nx">label</span><span class="p">].</span><span class="nx">bind</span><span class="p">(</span><span class="s1">&#39;publish&#39;</span><span class="p">,</span> <span class="nx">_</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">publishProxy</span><span class="p">).</span><span class="nx">bind</span><span class="p">(</span><span class="k">this</span><span class="p">));</span>
+      <span class="k">this</span><span class="p">[</span><span class="nx">label</span><span class="p">].</span><span class="nx">bind</span><span class="p">(</span><span class="s1">&#39;remove&#39;</span><span class="p">,</span> <span class="nx">_</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">publishRemove</span><span class="p">).</span><span class="nx">bind</span><span class="p">(</span><span class="k">this</span><span class="p">));</span>
+      <span class="k">this</span><span class="p">[</span><span class="nx">label</span><span class="p">].</span><span class="nx">bind</span><span class="p">(</span><span class="s1">&#39;add&#39;</span><span class="p">,</span> <span class="nx">_</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">publishAdd</span><span class="p">).</span><span class="nx">bind</span><span class="p">(</span><span class="k">this</span><span class="p">));</span>
+      <span class="k">this</span><span class="p">[</span><span class="nx">label</span><span class="p">].</span><span class="nx">parent</span> <span class="o">=</span> <span class="k">this</span><span class="p">;</span>
+    <span class="p">},</span>
+    </pre></div>             </td>           </tr>                               <tr id="section-9">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-9">&#182;</a>               </div>               <h3>addChildModel</h3>
+
+<p>Adds a child model and ensures that various publish events will be proxied up
+and that we store a reference to the parent.</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="nx">addChildModel</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">label</span><span class="p">,</span> <span class="nx">constructor</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">this</span><span class="p">[</span><span class="nx">label</span><span class="p">]</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">constructor</span><span class="p">();</span>
+      <span class="k">this</span><span class="p">[</span><span class="nx">label</span><span class="p">].</span><span class="nx">bind</span><span class="p">(</span><span class="s1">&#39;publish&#39;</span><span class="p">,</span> <span class="nx">_</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">publishProxy</span><span class="p">).</span><span class="nx">bind</span><span class="p">(</span><span class="k">this</span><span class="p">));</span>
+      <span class="k">this</span><span class="p">[</span><span class="nx">label</span><span class="p">].</span><span class="nx">parent</span> <span class="o">=</span> <span class="k">this</span><span class="p">;</span>
+    <span class="p">},</span>
+    </pre></div>             </td>           </tr>                               <tr id="section-10">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-10">&#182;</a>               </div>               <h3>modelGetter</h3>
+
+<p>Convenience method for retrieving any model, no matter where, by id.</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="nx">modelGetter</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">id</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">return</span> <span class="nx">Capsule</span><span class="p">.</span><span class="nx">models</span><span class="p">[</span><span class="nx">id</span><span class="p">];</span>
+    <span class="p">},</span>
+    </pre></div>             </td>           </tr>                               <tr id="section-11">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-11">&#182;</a>               </div>               <h3>toggle</h3>
+
+<p>checks and toggles boolean properties on the server.</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="nx">toggle</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">attrName</span><span class="p">)</span> <span class="p">{</span>
+      <span class="kd">var</span> <span class="nx">change</span> <span class="o">=</span> <span class="p">{};</span>
+      <span class="nx">change</span><span class="p">[</span><span class="nx">attrName</span><span class="p">]</span> <span class="o">=</span> <span class="o">!</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">attrName</span><span class="p">));</span>
+      <span class="k">this</span><span class="p">.</span><span class="nx">setServer</span><span class="p">(</span><span class="nx">change</span><span class="p">);</span>
+    <span class="p">},</span>
+    </pre></div>             </td>           </tr>                               <tr id="section-12">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-12">&#182;</a>               </div>               <h3>deleteServer</h3>
+
+<p>Sends delete event for <code>id</code> to server.</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="nx">deleteServer</span><span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+      <span class="nx">socket</span><span class="p">.</span><span class="nx">send</span><span class="p">({</span>
+        <span class="nx">event</span><span class="o">:</span> <span class="s1">&#39;delete&#39;</span><span class="p">,</span>
+        <span class="nx">id</span><span class="o">:</span> <span class="k">this</span><span class="p">.</span><span class="nx">id</span>
+      <span class="p">});</span>
+    <span class="p">},</span>
+    </pre></div>             </td>           </tr>                               <tr id="section-13">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-13">&#182;</a>               </div>               <h3>toTemplate</h3>
+
+<p>This is a replacement for simply sending Backbone's <code>toJSON</code> data to the template.
+Since we're using <a href="http://icanhazjs.com">ICanHaz.js</a> which uses Mustache, using
+this function lets us send function to the template. Useful for formatting, and other
+calculated values.</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="nx">toTemplate</span><span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+      <span class="kd">var</span> <span class="nx">result</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">toJSON</span><span class="p">(),</span>
+        <span class="nx">self</span> <span class="o">=</span> <span class="k">this</span><span class="p">;</span>
+      
+      <span class="nx">result</span><span class="p">.</span><span class="nx">htmlId</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">cid</span><span class="p">;</span>
+      <span class="k">if</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">templateHelpers</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">_</span><span class="p">.</span><span class="nx">each</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">templateHelpers</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">val</span><span class="p">)</span> <span class="p">{</span>
+          <span class="nx">result</span><span class="p">[</span><span class="nx">val</span><span class="p">]</span> <span class="o">=</span> <span class="nx">_</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="nx">self</span><span class="p">[</span><span class="nx">val</span><span class="p">],</span> <span class="nx">self</span><span class="p">);</span>
+        <span class="p">});</span>
+      <span class="p">}</span>
+      <span class="k">return</span> <span class="nx">result</span><span class="p">;</span>
+    <span class="p">},</span>
+    </pre></div>             </td>           </tr>                               <tr id="section-14">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-14">&#182;</a>               </div>               <h3>xport</h3>
+
+<p>Our serializer. Builds and returns a simple object ready to be JSON stringified
+By default it recurses through child models/collections unless you pass it <code>{recurse: false}</code>.
+The recursion also includes protections from creating circular references.</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="nx">xport</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">opt</span><span class="p">)</span> <span class="p">{</span>
+      <span class="kd">var</span> <span class="nx">result</span> <span class="o">=</span> <span class="p">{},</span>
+        <span class="nx">settings</span> <span class="o">=</span> <span class="nx">_</span><span class="p">({</span>
+          <span class="nx">recurse</span><span class="o">:</span> <span class="kc">true</span>
+        <span class="p">}).</span><span class="nx">extend</span><span class="p">(</span><span class="nx">opt</span> <span class="o">||</span> <span class="p">{});</span>
+      <span class="kd">function</span> <span class="nx">process</span><span class="p">(</span><span class="nx">targetObj</span><span class="p">,</span> <span class="nx">source</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">targetObj</span><span class="p">.</span><span class="nx">id</span> <span class="o">=</span> <span class="nx">source</span><span class="p">.</span><span class="nx">id</span> <span class="o">||</span> <span class="kc">null</span><span class="p">;</span>
+        <span class="nx">targetObj</span><span class="p">.</span><span class="nx">cid</span> <span class="o">=</span> <span class="nx">source</span><span class="p">.</span><span class="nx">cid</span> <span class="o">||</span> <span class="kc">null</span><span class="p">;</span>
+        <span class="nx">targetObj</span><span class="p">.</span><span class="nx">attrs</span> <span class="o">=</span> <span class="nx">source</span><span class="p">.</span><span class="nx">toJSON</span><span class="p">();</span>
+        <span class="nx">_</span><span class="p">.</span><span class="nx">each</span><span class="p">(</span><span class="nx">source</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">value</span><span class="p">,</span> <span class="nx">key</span><span class="p">)</span> <span class="p">{</span>
+          <span class="k">if</span> <span class="p">(</span><span class="nx">settings</span><span class="p">.</span><span class="nx">recurse</span><span class="p">)</span> <span class="p">{</span>
+            <span class="k">if</span> <span class="p">(</span><span class="nx">key</span> <span class="o">!==</span> <span class="s1">&#39;collection&#39;</span> <span class="o">&amp;&amp;</span> <span class="nx">source</span><span class="p">[</span><span class="nx">key</span><span class="p">]</span> <span class="k">instanceof</span> <span class="nx">Backbone</span><span class="p">.</span><span class="nx">Collection</span><span class="p">)</span> <span class="p">{</span>
+              <span class="nx">targetObj</span><span class="p">.</span><span class="nx">collections</span> <span class="o">=</span> <span class="nx">targetObj</span><span class="p">.</span><span class="nx">collections</span> <span class="o">||</span> <span class="p">{};</span>
+              <span class="nx">targetObj</span><span class="p">.</span><span class="nx">collections</span><span class="p">[</span><span class="nx">key</span><span class="p">]</span> <span class="o">=</span> <span class="p">{};</span>
+              <span class="nx">targetObj</span><span class="p">.</span><span class="nx">collections</span><span class="p">[</span><span class="nx">key</span><span class="p">].</span><span class="nx">models</span> <span class="o">=</span> <span class="p">[];</span>
+              <span class="nx">targetObj</span><span class="p">.</span><span class="nx">collections</span><span class="p">[</span><span class="nx">key</span><span class="p">].</span><span class="nx">id</span> <span class="o">=</span> <span class="nx">source</span><span class="p">[</span><span class="nx">key</span><span class="p">].</span><span class="nx">id</span> <span class="o">||</span> <span class="kc">null</span><span class="p">;</span>
+              <span class="nx">_</span><span class="p">.</span><span class="nx">each</span><span class="p">(</span><span class="nx">source</span><span class="p">[</span><span class="nx">key</span><span class="p">].</span><span class="nx">models</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">value</span><span class="p">,</span> <span class="nx">index</span><span class="p">)</span> <span class="p">{</span>
+                <span class="nx">process</span><span class="p">(</span><span class="nx">targetObj</span><span class="p">.</span><span class="nx">collections</span><span class="p">[</span><span class="nx">key</span><span class="p">].</span><span class="nx">models</span><span class="p">[</span><span class="nx">index</span><span class="p">]</span> <span class="o">=</span> <span class="p">{},</span> <span class="nx">value</span><span class="p">);</span>
+              <span class="p">});</span>
+            <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="nx">source</span><span class="p">[</span><span class="nx">key</span><span class="p">]</span> <span class="k">instanceof</span> <span class="nx">Backbone</span><span class="p">.</span><span class="nx">Model</span> <span class="o">&amp;&amp;</span> <span class="nx">source</span><span class="p">[</span><span class="nx">key</span><span class="p">].</span><span class="nx">parent</span> <span class="o">!==</span> <span class="nx">source</span><span class="p">)</span> <span class="p">{</span>
+              <span class="nx">targetObj</span><span class="p">.</span><span class="nx">models</span> <span class="o">=</span> <span class="nx">targetObj</span><span class="p">.</span><span class="nx">models</span> <span class="o">||</span> <span class="p">{};</span>
+              <span class="nx">process</span><span class="p">(</span><span class="nx">targetObj</span><span class="p">.</span><span class="nx">models</span><span class="p">[</span><span class="nx">key</span><span class="p">]</span> <span class="o">=</span> <span class="p">{},</span> <span class="nx">value</span><span class="p">);</span>
+            <span class="p">}</span>
+          <span class="p">}</span>
+        <span class="p">});</span>
+      <span class="p">}</span>
+      <span class="nx">process</span><span class="p">(</span><span class="nx">result</span><span class="p">,</span> <span class="k">this</span><span class="p">);</span>
+      <span class="k">return</span> <span class="nx">result</span><span class="p">;</span>
+    <span class="p">},</span>
+    </pre></div>             </td>           </tr>                               <tr id="section-15">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-15">&#182;</a>               </div>               <h3>mport</h3>
+
+<p>Our deserializer. Reinflates the model structure with data created by the <code>xport</code> function above.</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="nx">mport</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">data</span><span class="p">,</span> <span class="nx">silent</span><span class="p">)</span> <span class="p">{</span>
+      <span class="kd">function</span> <span class="nx">process</span><span class="p">(</span><span class="nx">targetObj</span><span class="p">,</span> <span class="nx">data</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">targetObj</span><span class="p">.</span><span class="nx">id</span> <span class="o">=</span> <span class="nx">data</span><span class="p">.</span><span class="nx">id</span> <span class="o">||</span> <span class="kc">null</span><span class="p">;</span>
+        <span class="nx">targetObj</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="nx">data</span><span class="p">.</span><span class="nx">attrs</span><span class="p">,</span> <span class="p">{</span><span class="nx">silent</span><span class="o">:</span> <span class="nx">silent</span><span class="p">});</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nx">data</span><span class="p">.</span><span class="nx">collections</span><span class="p">)</span> <span class="p">{</span>
+          <span class="nx">_</span><span class="p">.</span><span class="nx">each</span><span class="p">(</span><span class="nx">data</span><span class="p">.</span><span class="nx">collections</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">collection</span><span class="p">,</span> <span class="nx">name</span><span class="p">)</span> <span class="p">{</span>
+            <span class="nx">targetObj</span><span class="p">[</span><span class="nx">name</span><span class="p">].</span><span class="nx">id</span> <span class="o">=</span> <span class="nx">collection</span><span class="p">.</span><span class="nx">id</span><span class="p">;</span>
+            <span class="nx">Capsule</span><span class="p">.</span><span class="nx">models</span><span class="p">[</span><span class="nx">collection</span><span class="p">.</span><span class="nx">id</span><span class="p">]</span> <span class="o">=</span> <span class="nx">targetObj</span><span class="p">[</span><span class="nx">name</span><span class="p">];</span>
+            <span class="nx">_</span><span class="p">.</span><span class="nx">each</span><span class="p">(</span><span class="nx">collection</span><span class="p">.</span><span class="nx">models</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">modelData</span><span class="p">,</span> <span class="nx">index</span><span class="p">)</span> <span class="p">{</span>
+              <span class="kd">var</span> <span class="nx">newObj</span> <span class="o">=</span> <span class="nx">targetObj</span><span class="p">[</span><span class="nx">name</span><span class="p">].</span><span class="nx">_add</span><span class="p">({},</span> <span class="p">{</span><span class="nx">silent</span><span class="o">:</span> <span class="nx">silent</span><span class="p">});</span>
+              <span class="nx">process</span><span class="p">(</span><span class="nx">newObj</span><span class="p">,</span> <span class="nx">modelData</span><span class="p">);</span>
+            <span class="p">});</span>
+          <span class="p">});</span>
+        <span class="p">}</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nx">data</span><span class="p">.</span><span class="nx">models</span><span class="p">)</span> <span class="p">{</span>
+          <span class="nx">_</span><span class="p">.</span><span class="nx">each</span><span class="p">(</span><span class="nx">data</span><span class="p">.</span><span class="nx">models</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">modelData</span><span class="p">,</span> <span class="nx">name</span><span class="p">)</span> <span class="p">{</span>
+            <span class="nx">process</span><span class="p">(</span><span class="nx">targetObj</span><span class="p">[</span><span class="nx">name</span><span class="p">],</span> <span class="nx">modelData</span><span class="p">);</span>
+          <span class="p">});</span>
+        <span class="p">}</span>
+      <span class="p">}</span>
+      <span class="nx">process</span><span class="p">(</span><span class="k">this</span><span class="p">,</span> <span class="nx">data</span><span class="p">);</span>
+      <span class="k">return</span> <span class="k">this</span><span class="p">;</span>
+    <span class="p">},</span>
+    </pre></div>             </td>           </tr>                               <tr id="section-16">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-16">&#182;</a>               </div>               <h3>publishProxy</h3>
+
+<p>Primarily an internal method that just passes publish events up
+through the model structure so those events can bubble.</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="nx">publishProxy</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">data</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">this</span><span class="p">.</span><span class="nx">trigger</span><span class="p">(</span><span class="s1">&#39;publish&#39;</span><span class="p">,</span> <span class="nx">data</span><span class="p">);</span>
+    <span class="p">},</span>
+    </pre></div>             </td>           </tr>                               <tr id="section-17">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-17">&#182;</a>               </div>               <h3>publishChange</h3>
+
+<p>Creates a publish event of type <code>change</code> for bubbling up the tree.</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="nx">publishChange</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">model</span><span class="p">,</span> <span class="nx">val</span><span class="p">,</span> <span class="nx">options</span><span class="p">,</span> <span class="nx">attr</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">if</span> <span class="p">(</span><span class="nx">model</span> <span class="k">instanceof</span> <span class="nx">Backbone</span><span class="p">.</span><span class="nx">Model</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">trigger</span><span class="p">(</span><span class="s1">&#39;publish&#39;</span><span class="p">,</span> <span class="p">{</span>
+          <span class="nx">event</span><span class="o">:</span> <span class="s1">&#39;change&#39;</span><span class="p">,</span>
+          <span class="nx">id</span><span class="o">:</span> <span class="nx">model</span><span class="p">.</span><span class="nx">id</span><span class="p">,</span>
+          <span class="nx">data</span><span class="o">:</span> <span class="nx">model</span><span class="p">.</span><span class="nx">attributes</span>
+        <span class="p">});</span>
+      <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+        <span class="nx">console</span><span class="p">.</span><span class="nx">error</span><span class="p">(</span><span class="s1">&#39;event was not a model&#39;</span><span class="p">,</span> <span class="nx">e</span><span class="p">);</span>
+      <span class="p">}</span>
+    <span class="p">},</span>
+    </pre></div>             </td>           </tr>                               <tr id="section-18">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-18">&#182;</a>               </div>               <h3>publishAdd</h3>
+
+<p>Convert <code>add</code> events to <code>publish</code> events for bubbling.</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="nx">publishAdd</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">model</span><span class="p">,</span> <span class="nx">collection</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">this</span><span class="p">.</span><span class="nx">trigger</span><span class="p">(</span><span class="s1">&#39;publish&#39;</span><span class="p">,</span> <span class="p">{</span>
+        <span class="nx">event</span><span class="o">:</span> <span class="s1">&#39;add&#39;</span><span class="p">,</span>
+        <span class="nx">data</span><span class="o">:</span> <span class="nx">model</span><span class="p">.</span><span class="nx">xport</span><span class="p">(),</span>
+        <span class="nx">collection</span><span class="o">:</span> <span class="nx">collection</span><span class="p">.</span><span class="nx">id</span>
+      <span class="p">});</span>
+    <span class="p">},</span>
+    </pre></div>             </td>           </tr>                               <tr id="section-19">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-19">&#182;</a>               </div>               <h3>publishAdd</h3>
+
+<p>Convert <code>remove</code> events to <code>publish</code> events for bubbling.</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="nx">publishRemove</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">model</span><span class="p">,</span> <span class="nx">collection</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">this</span><span class="p">.</span><span class="nx">trigger</span><span class="p">(</span><span class="s1">&#39;publish&#39;</span><span class="p">,</span> <span class="p">{</span>
+        <span class="nx">event</span><span class="o">:</span> <span class="s1">&#39;remove&#39;</span><span class="p">,</span>
+        <span class="nx">id</span><span class="o">:</span> <span class="nx">model</span><span class="p">.</span><span class="nx">id</span>
+      <span class="p">});</span>
+    <span class="p">},</span>
+    </pre></div>             </td>           </tr>                               <tr id="section-20">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-20">&#182;</a>               </div>               <h3>ensureRequired</h3>
+
+<p>Convenience for making sure a model has certain required attributes.</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="nx">ensureRequired</span><span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+      <span class="kd">var</span> <span class="nx">self</span> <span class="o">=</span> <span class="k">this</span><span class="p">;</span>
+      <span class="k">if</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">required</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">_</span><span class="p">.</span><span class="nx">each</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">required</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">type</span><span class="p">,</span> <span class="nx">key</span><span class="p">)</span> <span class="p">{</span>
+          <span class="nx">self</span><span class="p">.</span><span class="nx">checkType</span><span class="p">(</span><span class="nx">type</span><span class="p">,</span> <span class="nx">self</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">key</span><span class="p">),</span> <span class="nx">key</span><span class="p">);</span>
+        <span class="p">});</span>
+      <span class="p">}</span>
+    <span class="p">},</span>
+    </pre></div>             </td>           </tr>                               <tr id="section-21">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-21">&#182;</a>               </div>               <h3>validate</h3>
+
+<p>Convenient default for Backbone's <code>validate</code> convention. It lets you do simple typechecking
+on properties by supplying a <code>required</code> hash with property names and types </p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="nx">validate</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">attr</span><span class="p">)</span> <span class="p">{</span>
+      <span class="kd">var</span> <span class="nx">self</span> <span class="o">=</span> <span class="k">this</span><span class="p">;</span>
+      <span class="nx">_</span><span class="p">.</span><span class="nx">each</span><span class="p">(</span><span class="nx">attr</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">value</span><span class="p">,</span> <span class="nx">key</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">if</span> <span class="p">(</span><span class="nx">self</span><span class="p">.</span><span class="nx">required</span> <span class="o">&amp;&amp;</span> <span class="nx">self</span><span class="p">.</span><span class="nx">required</span><span class="p">.</span><span class="nx">hasOwnProperty</span><span class="p">(</span><span class="nx">key</span><span class="p">))</span> <span class="p">{</span>
+          <span class="kd">var</span> <span class="nx">type</span> <span class="o">=</span> <span class="nx">self</span><span class="p">.</span><span class="nx">required</span><span class="p">[</span><span class="nx">key</span><span class="p">];</span>
+          <span class="nx">self</span><span class="p">.</span><span class="nx">checkType</span><span class="p">(</span><span class="nx">type</span><span class="p">,</span> <span class="nx">value</span><span class="p">,</span> <span class="nx">key</span><span class="p">);</span>
+        <span class="p">}</span>
+      <span class="p">});</span>   
+    <span class="p">},</span>
+    </pre></div>             </td>           </tr>                               <tr id="section-22">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-22">&#182;</a>               </div>               <h3>checkType</h3>
+
+<p>Our simple typechecker, that just uses underscore's type checkers.</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="nx">checkType</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">type</span><span class="p">,</span> <span class="nx">value</span><span class="p">,</span> <span class="nx">key</span><span class="p">)</span> <span class="p">{</span>
+      <span class="kd">var</span> <span class="nx">validator</span><span class="p">;</span>
+      <span class="nx">type</span> <span class="o">=</span> <span class="nx">type</span><span class="p">.</span><span class="nx">toLowerCase</span><span class="p">();</span>
+      <span class="k">switch</span> <span class="p">(</span><span class="nx">type</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">case</span> <span class="s1">&#39;string&#39;</span><span class="o">:</span> <span class="nx">validator</span> <span class="o">=</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isString</span><span class="p">;</span> <span class="k">break</span><span class="p">;</span>
+        <span class="k">case</span> <span class="s1">&#39;boolean&#39;</span><span class="o">:</span> <span class="nx">validator</span> <span class="o">=</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isBoolean</span><span class="p">;</span> <span class="k">break</span><span class="p">;</span>
+        <span class="k">case</span> <span class="s1">&#39;date&#39;</span><span class="o">:</span> <span class="nx">validator</span> <span class="o">=</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isDate</span><span class="p">;</span> <span class="k">break</span><span class="p">;</span>
+        <span class="k">case</span> <span class="s1">&#39;array&#39;</span><span class="o">:</span> <span class="nx">validator</span> <span class="o">=</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isArray</span><span class="p">;</span> <span class="k">break</span><span class="p">;</span>
+        <span class="k">case</span> <span class="s1">&#39;number&#39;</span><span class="o">:</span> <span class="nx">validator</span> <span class="o">=</span> <span class="nx">_</span><span class="p">.</span><span class="nx">isNumber</span><span class="p">;</span> <span class="k">break</span><span class="p">;</span>
+      <span class="p">}</span>
+      <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">validator</span><span class="p">(</span><span class="nx">value</span><span class="p">))</span> <span class="p">{</span>
+        <span class="k">throw</span> <span class="s2">&quot;The &#39;&quot;</span> <span class="o">+</span> <span class="nx">key</span> <span class="o">+</span> <span class="s2">&quot;&#39; property of a &#39;&quot;</span> <span class="o">+</span> <span class="k">this</span><span class="p">.</span><span class="nx">type</span> <span class="o">+</span> <span class="s2">&quot;&#39; must be a &#39;&quot;</span> <span class="o">+</span> <span class="nx">type</span> <span class="o">+</span> <span class="s2">&quot;&#39;. You gave me &#39;&quot;</span> <span class="o">+</span> <span class="nx">value</span> <span class="o">+</span> <span class="s2">&quot;&#39;.&quot;</span><span class="p">;</span>
+      <span class="p">}</span>
+    <span class="p">},</span>
+    </pre></div>             </td>           </tr>                               <tr id="section-23">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-23">&#182;</a>               </div>               <h3>setServer</h3>
+
+<p>Our server version of the normal <code>set</code> method. Takes a hash of attributes</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="nx">setServer</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">attrs</span><span class="p">,</span> <span class="nx">options</span><span class="p">)</span> <span class="p">{</span>
+      <span class="nx">socket</span><span class="p">.</span><span class="nx">send</span><span class="p">({</span>
+        <span class="nx">event</span><span class="o">:</span> <span class="s1">&#39;set&#39;</span><span class="p">,</span>
+        <span class="nx">id</span><span class="o">:</span> <span class="k">this</span><span class="p">.</span><span class="nx">id</span><span class="p">,</span>
+        <span class="nx">change</span><span class="o">:</span> <span class="nx">attrs</span>
+      <span class="p">});</span>
+    <span class="p">}</span>
+  <span class="p">});</span>
+  
+  </pre></div>             </td>           </tr>                               <tr id="section-24">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-24">&#182;</a>               </div>               <h2>Capsule.Collection</h2>             </td>             <td class="code">               <div class="highlight"><pre>  </pre></div>             </td>           </tr>                               <tr id="section-25">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-25">&#182;</a>               </div>               <p>Extend Backbone collection with Capsule functionality</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nx">Capsule</span><span class="p">.</span><span class="nx">Collection</span> <span class="o">=</span> <span class="nx">Backbone</span><span class="p">.</span><span class="nx">Collection</span><span class="p">.</span><span class="nx">extend</span><span class="p">({</span>
+    </pre></div>             </td>           </tr>                               <tr id="section-26">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-26">&#182;</a>               </div>               <h3>register</h3>
+
+<p>Generates an <code>id</code> if on server and sets it in our reference hash.</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="nx">register</span><span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+      <span class="kd">var</span> <span class="nx">self</span> <span class="o">=</span> <span class="k">this</span><span class="p">;</span>
+      <span class="k">if</span> <span class="p">(</span><span class="nx">server</span><span class="p">)</span> <span class="p">{</span>
+        <span class="kd">var</span> <span class="nx">id</span> <span class="o">=</span> <span class="nx">uuid</span><span class="p">();</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">id</span> <span class="o">=</span> <span class="nx">id</span><span class="p">;</span>
+      <span class="p">}</span>
+      <span class="k">if</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">id</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="nx">Capsule</span><span class="p">.</span><span class="nx">models</span><span class="p">[</span><span class="k">this</span><span class="p">.</span><span class="nx">id</span><span class="p">])</span> <span class="nx">Capsule</span><span class="p">.</span><span class="nx">models</span><span class="p">[</span><span class="k">this</span><span class="p">.</span><span class="nx">id</span><span class="p">]</span> <span class="o">=</span> <span class="k">this</span><span class="p">;</span>
+    <span class="p">},</span>
+    </pre></div>             </td>           </tr>                               <tr id="section-27">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-27">&#182;</a>               </div>               <h3>addServer</h3>
+
+<p>The server version of backbone's <code>add</code> method.</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="nx">addServer</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">data</span><span class="p">)</span> <span class="p">{</span>
+      <span class="nx">socket</span><span class="p">.</span><span class="nx">send</span><span class="p">({</span>
+        <span class="nx">event</span><span class="o">:</span> <span class="s1">&#39;add&#39;</span><span class="p">,</span>
+        <span class="nx">id</span><span class="o">:</span> <span class="k">this</span><span class="p">.</span><span class="nx">id</span><span class="p">,</span>
+        <span class="nx">data</span><span class="o">:</span> <span class="nx">data</span>
+      <span class="p">});</span>
+    <span class="p">},</span>
+    </pre></div>             </td>           </tr>                               <tr id="section-28">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-28">&#182;</a>               </div>               <h3>registerRadioProperties</h3>
+
+<p>A convenience for creating <code>radio</code> properties where you can specify an
+Array of properties in a collection and ensure that only model can have that
+property set to <code>true</code>.
+If we're adding stuff we need to make sure the added items don't violate the
+radio property rule if it's already set.</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="nx">registerRadioProperties</span><span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+      <span class="kd">var</span> <span class="nx">collection</span> <span class="o">=</span> <span class="k">this</span><span class="p">;</span>
+      <span class="k">if</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">radioProperties</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">_</span><span class="p">.</span><span class="nx">each</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">radioProperties</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">property</span><span class="p">)</span> <span class="p">{</span>
+          <span class="nx">collection</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="s1">&#39;change:&#39;</span> <span class="o">+</span> <span class="nx">property</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">changedModel</span><span class="p">)</span> <span class="p">{</span>
+            <span class="k">if</span> <span class="p">(</span><span class="nx">changedModel</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">property</span><span class="p">))</span> <span class="p">{</span>
+              <span class="nx">collection</span><span class="p">.</span><span class="nx">each</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">model</span><span class="p">)</span> <span class="p">{</span>
+                <span class="kd">var</span> <span class="nx">tempObj</span> <span class="o">=</span> <span class="p">{};</span>
+                <span class="k">if</span> <span class="p">(</span><span class="nx">model</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">property</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="nx">model</span><span class="p">.</span><span class="nx">cid</span> <span class="o">!==</span> <span class="nx">changedModel</span><span class="p">.</span><span class="nx">cid</span><span class="p">)</span> <span class="p">{</span>
+                  <span class="nx">tempObj</span><span class="p">[</span><span class="nx">property</span><span class="p">]</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
+                  <span class="nx">model</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="nx">tempObj</span><span class="p">);</span>
+                <span class="p">}</span>
+              <span class="p">});</span>
+            <span class="p">}</span>
+          <span class="p">});</span>
+          <span class="nx">collection</span><span class="p">.</span><span class="nx">bind</span><span class="p">(</span><span class="s1">&#39;add&#39;</span><span class="p">,</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">addedModel</span><span class="p">)</span> <span class="p">{</span>
+            <span class="kd">var</span> <span class="nx">tempObj</span> <span class="o">=</span> <span class="p">{};</span>
+            <span class="k">if</span> <span class="p">(</span><span class="nx">collection</span><span class="p">.</span><span class="nx">select</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">model</span><span class="p">)</span> <span class="p">{</span>
+              <span class="k">return</span> <span class="nx">model</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">property</span><span class="p">);</span>
+            <span class="p">}).</span><span class="nx">length</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+              <span class="nx">tempObj</span><span class="p">[</span><span class="nx">property</span><span class="p">]</span> <span class="o">=</span> <span class="kc">false</span><span class="p">;</span>
+              <span class="nx">addedModel</span><span class="p">.</span><span class="nx">set</span><span class="p">(</span><span class="nx">tempObj</span><span class="p">);</span>
+            <span class="p">}</span>
+          <span class="p">});</span>
+        <span class="p">});</span>
+      <span class="p">}</span>
+    <span class="p">},</span>
+    </pre></div>             </td>           </tr>                               <tr id="section-29">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-29">&#182;</a>               </div>               <h3>filterByProperty</h3>
+
+<p>Shortcut for returning an array of models in the collection that have a certain <code>name</code> / <code>value</code>.</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="nx">filterByProperty</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">prop</span><span class="p">,</span> <span class="nx">value</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">filter</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">model</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="nx">model</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">prop</span><span class="p">)</span> <span class="o">===</span> <span class="nx">value</span><span class="p">;</span>
+      <span class="p">});</span>
+    <span class="p">},</span>
+    </pre></div>             </td>           </tr>                               <tr id="section-30">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-30">&#182;</a>               </div>               <h3>findByProperty</h3>
+
+<p>Shortcut for finding first model in the collection with a certain <code>name</code> / <code>value</code>.</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="nx">findByProperty</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">prop</span><span class="p">,</span> <span class="nx">value</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">find</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">model</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="nx">model</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">prop</span><span class="p">)</span> <span class="o">===</span> <span class="nx">value</span><span class="p">;</span>
+      <span class="p">});</span>
+    <span class="p">}</span>
+  <span class="p">});</span>
+<span class="p">})();</span>
+
+</pre></div>             </td>           </tr>                </tbody>     </table>   </div> </body> </html> 
