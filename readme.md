@@ -18,6 +18,13 @@ It's essentially a set of convenience methods and additions to @jashkenas's exce
 
 ##How to use it
 
+The following pages also serve as temporary API documentation of what the code is capable of. You should read these as well, before you attempt to use this:
+
+- [Capsule.models.js](http://andyet.github.com/Capsule/docs/capsule.models.html)
+- [Capsule.views.js](http://andyet.github.com/Capsule/docs/capsule.views.html)
+
+Here's how you'd start building an app based on this method:
+
 1. Build your models file. You'll want something like this at the top to make it possible to use on the server and in the browser:
 
         if (typeof require == 'undefined') {
