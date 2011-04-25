@@ -75,7 +75,7 @@ It's essentially a set of convenience methods and additions to @jashkenas's exce
              // Then grab whatever else you need and send the intial state to the client.
              client.send({
                event: 'initial',
-               team: app.xport()
+               app: app.xport()
              });
                     
              // bind to the root `publish` events to send any changes to this client
@@ -90,15 +90,74 @@ It's essentially a set of convenience methods and additions to @jashkenas's exce
             app.modelGetter(message.id).set(message.change);
             break;
           case 'delete':
-            model = team.modelGetter(message.id);
+            model = app.modelGetter(message.id);
             if (model && model.collection) model.collection.remove(model);
             break;
           case 'add':
-            collection = team.modelGetter(message.id);
+            collection = app.modelGetter(message.id);
             if (collection) collection.add(message.data);
             break;
         }
       });
     });
     
-4. 
+4. In your client code. Do something like this.
+  
+    $(function () {
+      // init our empty AppModel
+      var app = window.app = new AppModel(),
+        view = window.view = {},
+        server;
+        
+      window.socket = new io.Socket();
+        
+      // get and send our session cookie (yes, i know httponly cookies would be more secure, but whatever it's demo)
+      socket.on('connect', function() { 
+        socket.send({event: 'session', cookie: $.cookie('&!')});
+        console.log('connected');
+      });
+        
+      socket.on('message', function (data) { 
+        var changedModel, template;
+        
+        console.log('RECD:', data);
+        
+        switch (data.event) {
+          case 'templates':
+            for (template in data.templates) {
+              ich.addTemplate(template, data.templates[template]);
+            }
+            break;
+          case 'initial':
+            //import app state
+            app.mport(data.app);
+            
+            // init our root view
+            view = window.view = new AppView({
+              el: $('body'),
+              model: app
+            });
+            
+            view.render();
+            break;
+          case 'change':
+            changedModel = Capsule.models[data.id];
+            if (changedModel) {
+              changedModel.set(data.data);
+            } else {
+              console.error('model not found for change event', data);
+            }
+            break;
+          case 'add':
+            Capsule.models[data.collection].add(data.data.attrs);
+            break;
+          case 'remove':
+            changedModel = Capsule.models[data.id];
+            if (changedModel && changedModel.collection) {
+              changedModel.collection.remove(changedModel);
+            }
+            break;
+        }
+      });
+    });
+
