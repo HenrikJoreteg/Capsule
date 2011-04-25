@@ -1,3 +1,4 @@
+/*global Backbone: true, _: true, ich */
 (function(){
   // Initial Setup
   // -------------
@@ -5,15 +6,17 @@
   // The top-level namespace. All Capsule classes and modules will
   // be attached to this. Exported for both CommonJS and the browser.
   var Capsule,
-    $ = this.jQuery || this.Zepto || function(){};
+    $ = this.jQuery || this.Zepto || function(){},
+    Backbone,
+    _;
     
     if (typeof exports !== 'undefined') {
-      var Backbone = require('./backbone'),
-        _ = require('underscore')._;
+      Backbone = require('./backbone');
+      _ = require('underscore')._;
       Capsule = exports;
     } else {
-      var Backbone = this.Backbone,
-        _ = this._;
+      Backbone = this.Backbone;
+      _ = this._;
       Capsule = this.Capsule || (this.Capsule = {});
     }
 
@@ -57,6 +60,26 @@
       return this;
     },
     
+    desist: function (opts) {
+      opts || (opts = {});
+      if (this.interval) {
+        clearInterval(this.interval);
+        delete this.interval;
+      }
+      if (opts.quick) {
+        $(this.el).unbind().remove();
+      } else {
+        $(this.el).animate({
+            height: 0,
+            opacity: 0
+          },
+          function () {
+            $(this).unbind().remove();
+          }
+        );
+      }
+    },
+    
     addReferences: function (hash) {
       var item;
       for (item in hash) {
@@ -65,23 +88,103 @@
     },
     
     autoSetInputs: function () {
-      this.$(':input').keyup(_(this.genericKeyUp).bind(this));
+      this.$(':input').bind('input', _(this.genericKeyUp).bind(this));
     },
     
     genericKeyUp: function (e) {
       var res = {},
-        target = $(e.target);
+        target = $(e.target),
+        type;
       if (e.which === 13 && e.target.tagName.toLowerCase() === 'input') target.blur();
       res[type = target.data('type')] = target.val();
       this.model.setServer(res);
-      return false;
     },
     
-    basicRender: function (templateKey) {
-      var newEl = ich[this.template || templateKey](this.model.toTemplate());
+    basicRender: function (opts) {
+      opts || (opts = {});
+      _.defaults(opts, {
+          placement: 'append',
+          templateKey: this.template
+      });
+      var newEl = ich[opts.templateKey](this.model.toTemplate());
       $(this.el).replaceWith(newEl);
       this.el = newEl;
+      this.handleBindings();
       this.delegateEvents();
+    },
+    
+    subViewRender: function (opts) {
+      opts || (opts = {});
+      _.defaults(opts , {
+          placement: 'append',
+          templateKey: this.template
+      });
+      var newEl = ich[opts.templateKey](this.model.toTemplate())[0];
+      if (!this.el.parentNode) {
+        $(this.containerEl)[opts.placement](newEl);
+      } else {
+        $(this.el).replaceWith(newEl);
+      }
+      this.el = newEl;
+      this.delegateEvents();
+    },
+    
+    bindomatic: function (model, ev, handler, options) {
+      var boundHandler = _(handler).bind(this),
+        evs = (ev instanceof Array) ? ev : [ev];
+          _(evs).each(function (ev) {
+          model.bind(ev, boundHandler);
+        });
+        
+      if (options && options.trigger) {
+        boundHandler();
+      }
+      
+      (this.unbindomatic_list = this.unbindomatic_list || []).push(function () {
+        _(evs).each(function (ev) {
+          model.unbind(ev, boundHandler);
+        });
+      });
+    },
+    
+    unbindomatic: function () {
+      _(this.unbindomatic_list || []).each(function (unbind) {
+        unbind();
+      });
+    },
+    
+    collectomatic: function (collection, ViewClass, options) {
+      var views = {};
+      this.bindomatic(collection, 'add', function (model) {
+        views[model.cid] = new ViewClass(_({model: model}).extend(options));
+      });
+      
+      this.bindomatic(collection, 'remove', function (model) {
+        views[model.cid].desist();
+        delete views[model.cid];
+      });
+      
+      this.bindomatic(collection, 'refresh', function () {
+        _(views).each(function (view) {
+          view.desist();
+        });
+        views = {};
+      
+        collection.each(function (model) {
+          views[model.cid] = new ViewClass(_({model: model}).extend(options));
+        });
+      }, {trigger: true});
+      
+      this.bindomatic(collection, 'move', function () {
+        _(views).each(function (view) {
+          view.desist({quick: true});
+        });
+        views = {};
+      
+        collection.each(function (model) {
+          views[model.cid] = new ViewClass(_({model: model}).extend(options));
+        });
+      });
     }
   });
 })();
