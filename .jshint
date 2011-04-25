@@ -1,0 +1,6 @@
+{
+  "predef": ["Backbone", "_"],
+  "node" : true,
+  "asi": false,
+  "expr": true
+}

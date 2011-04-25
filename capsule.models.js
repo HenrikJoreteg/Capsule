@@ -1,28 +1,25 @@
-/*global Backbone _ uuid */
 (function(){
   // Initial Setup
   // -------------
 
   // The top-level namespace. All public Capsule classes and modules will
   // be attached to this. Exported for both CommonJS and the browser.
-  var Capsule,
-    server = false;
+  var Capsule, Backbone, _, uuid, server = false;
     
     if (typeof exports !== 'undefined') {
-      var Backbone = require('./backbone'),
-        _ = require('underscore')._,
-        uuid = require('../packages/uuid');
+      Backbone = require('./backbone');
+      _ = require('underscore')._;
+      uuid = require('../packages/uuid');
       Capsule = exports;
       server = true;
     } else {
-      var Backbone = this.Backbone,
-        _ = this._;
+      Backbone = this.Backbone;
+      _ = this._;
       
       Capsule = this.Capsule || (this.Capsule = {});
     }
 
   Capsule.models = {};
-  //Capsule.collections = {};
     
   Capsule.Model = Backbone.Model.extend({
     register: function () {

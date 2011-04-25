@@ -1,14 +1,10 @@
-/*global Backbone: true, _: true, ich */
 (function(){
   // Initial Setup
   // -------------
 
   // The top-level namespace. All Capsule classes and modules will
   // be attached to this. Exported for both CommonJS and the browser.
-  var Capsule,
-    $ = this.jQuery || this.Zepto || function(){},
-    Backbone,
-    _;
+  var Capsule, Backbone, _, $ = this.jQuery || this.Zepto || function(){};
     
     if (typeof exports !== 'undefined') {
       Backbone = require('./backbone');
