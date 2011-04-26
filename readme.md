@@ -1,6 +1,6 @@
 #Capsule
 
-Capsule is an experimental web framework for node.js that uses socket.io and backbone to synchronize model state by sharing model code between the client and the server.
+Capsule is an experimental web framework by [@HenrikJoreteg](http://twitter.com/HenrikJoreteg) for Node.js that uses Socket.io and Backbone.js to synchronize model state by sharing model code between the client and the server.
 
 MIT Licensed.
 
@@ -171,7 +171,7 @@ Here's how you'd start building an app based on this method:
 
 ##Comments
 
-I'd love to get feedback and/or pull requests on this. Or, hit me up on twitter [@HenrikJoreteg](http://twitter.com/HenrikJoreteg)
+I'd love to get feedback and/or pull requests on this. Or, hit me up on twitter [@HenrikJoreteg](http://twitter.com/HenrikJoreteg).
 
 ##Roadmap
 
