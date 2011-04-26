@@ -5,7 +5,7 @@ Capsule is an experimental web framework for node.js that uses socket.io and bac
 MIT Licensed.
 
 ##Introduction !important
-I'm releasing Capsule in it's current state as a demonstration of one possible way to build realtime web apps. I've used it (or a similar variety) of it for a couple of apps. One of which our team uses everyday [&!](http://andbang.com).
+I'm releasing Capsule in it's current state as a demonstration of one possible way to build realtime web apps. I've used it (or a similar variety) of it for a couple of apps. One of which our team uses everyday.
 
 Capsule presents and experimental approach to building real-time web apps that re-uses the exact same models on the server as what you serve in a script tag in the html of your app. For more information on this approach see my blog post on [Re-using Backbone.js Models on the server with Node.js and Socket.io to build realtime apps](http://andyet.net/blog/2011/feb/15/re-using-backbonejs-models-on-the-server-with-node/). It's also something I will discuss in in my upcoming talk at [NodeConf 2011](http://nodeconf.com/).
 
