@@ -168,3 +168,16 @@ Here's how you'd start building an app based on this method:
           });
         });
 
+
+##Comments
+
+I'd love to get feedback and/or pull requests on this. Or, hit me up on twitter [@HenrikJoreteg](http://twitter.com/HenrikJoreteg)
+
+##Roadmap
+
+- Scaling questions: One big limitation of this approach in its current state is scaling. This library will be converted to use [Thoonk.js](https://github.com/andyet/Thoonk.js) to leverage Redis's clustering and pub/sub capabilities as a back end.
+- Better handling of offline support/flaky connections: Potentially one could build a `changes` queue of events if the connection is lost and then send those on reconnect.
+- Better/easier way to handle security instead of having to validate each message outside of the model structure on the server.
+- Full sample app (one that's not the proprietary apps I've built with this)
+- More awesome
+- Test suite
