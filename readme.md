@@ -9,11 +9,11 @@ I'm releasing Capsule in it's current state as a demonstration of one possible w
 
 Capsule presents and experimental approach to building real-time web apps that re-uses the exact same models on the server as what you serve in a script tag in the html of your app. For more information on this approach see my blog post on [Re-using Backbone.js Models on the server with Node.js and Socket.io to build realtime apps](http://andyet.net/blog/2011/feb/15/re-using-backbonejs-models-on-the-server-with-node/). It's also something I will discuss in in my upcoming talk at [NodeConf 2011](http://nodeconf.com/).
 
-It's essentially a set of convenience methods and additions to @jashkenas's excellent Backbone.js lib. In it's current state it's a bit indulgent in that it makes quite a few assumptions about your app and could certainly stand to be more generic.
+It's essentially a set of convenience methods and additions to [@jashkenas](http://twitter.com/jashkenas)'s excellent [Backbone.js](http://documentcloud.github.com/backbone/) lib. In it's current state Capsule is a bit indulgent in that it makes quite a few assumptions about your app and could certainly stand to be more generic.
 
 ##Core assumptions are as follows:
 
-- All synced state is stored in a root model which is kept in memory on the server (yes, this is obviously inefficient in some ways, but completely badass in others. Please don't tell me it won't scale we're also working on tying this into the completely aweseome thoonk.js redis lib that will use redis for clustering/scaling).
+- All synced state is stored in a root model which is kept in memory on the server (yes, this is inefficient in some ways, but completely badass in others. Please don't tell me it won't scale we're also working on tying this into [@fritzy](http://twitter.com/fritzy)'s aweseome [thoonk.js](https://github.com/andyet/thoonk.js) redis lib that will use redis for clustering/scaling).
 - Several of the methods in `Capsule.View` assume that you're also using [ICanHaz.js](http://icanhaz.js) and Mustache for your clientside templating.
 
 ##How to use it
@@ -178,6 +178,6 @@ I'd love to get feedback and/or pull requests on this. Or, hit me up on twitter 
 - Scaling questions: One big limitation of this approach in its current state is scaling. This library will be converted to use [Thoonk.js](https://github.com/andyet/Thoonk.js) to leverage Redis's clustering and pub/sub capabilities as a back end.
 - Better handling of offline support/flaky connections: Potentially one could build a `changes` queue of events if the connection is lost and then send those on reconnect.
 - Better/easier way to handle security instead of having to validate each message outside of the model structure on the server.
-- Full sample app (one that's not the proprietary apps I've built with this)
+- Full sample app (I've built stuff with this, but not opensourceable apps)
 - More awesome
 - Test suite
