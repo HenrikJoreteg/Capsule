@@ -7,13 +7,13 @@ MIT Licensed.
 ##Introduction !important
 I'm releasing Capsule in it's current state as a demonstration of one possible way to build realtime web apps. I've used it (or a similar variety) of it for a couple of apps. One of which our team uses everyday.
 
-Capsule presents and experimental approach to building real-time web apps that re-uses the exact same models on the server as what you serve in a script tag in the html of your app. For more information on this approach see my blog post on [Re-using Backbone.js Models on the server with Node.js and Socket.io to build realtime apps](http://andyet.net/blog/2011/feb/15/re-using-backbonejs-models-on-the-server-with-node/). It's also something I will discuss in in my upcoming talk at [NodeConf 2011](http://nodeconf.com/).
+Capsule presents and experimental approach to building real-time web apps that re-uses the exact same models on the server as what you serve in a script tag in the html of your app. For more information on this approach see my blog post on [Re-using Backbone.js Models on the server with Node.js and Socket.io to build realtime apps](http://andyet.net/blog/2011/feb/15/re-using-backbonejs-models-on-the-server-with-node/). It's also something I will discuss it in my upcoming talk at [NodeConf 2011](http://nodeconf.com/).
 
 It's essentially a set of convenience methods and additions to [@jashkenas](http://twitter.com/jashkenas)'s excellent [Backbone.js](http://documentcloud.github.com/backbone/) lib. In it's current state Capsule is a bit indulgent in that it makes quite a few assumptions about your app and could certainly stand to be more generic.
 
 ##Core assumptions are as follows:
 
-- All synced state is stored in a root model which is kept in memory on the server (yes, this is inefficient in some ways, but completely badass in others. Please don't tell me it won't scale we're also working on tying this into [@fritzy](http://twitter.com/fritzy)'s aweseome [thoonk.js](https://github.com/andyet/thoonk.js) redis lib that will use redis for clustering/scaling).
+- All synced state is stored in a root model which is kept in memory on the server (yes, this is inefficient in some ways, but completely badass in others. Please don't tell me it won't scale we're also working on tying this into [@fritzy](http://twitter.com/fritzy)'s aweseome upcoming thoonk.js redis lib that will use redis for clustering/scaling).
 - Several of the methods in `Capsule.View` assume that you're also using [ICanHaz.js](http://icanhaz.js) and Mustache for your clientside templating.
 
 ##How to use it
