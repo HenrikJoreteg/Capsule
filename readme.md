@@ -14,7 +14,7 @@ It's essentially a set of convenience methods and additions to [@jashkenas](http
 ##Core assumptions are as follows:
 
 - All synced state is stored in a root model which is kept in memory on the server (yes, this is inefficient in some ways, but completely badass in others. Please don't tell me it won't scale we're also working on tying this into [@fritzy](http://twitter.com/fritzy)'s aweseome upcoming thoonk.js redis lib that will use redis for clustering/scaling).
-- Several of the methods in `Capsule.View` assume that you're also using [ICanHaz.js](http://icanhaz.js) and Mustache for your clientside templating.
+- Several of the methods in `Capsule.View` assume that you're also using [ICanHaz.js](http://icanhazjs.com) and Mustache for your clientside templating.
 
 ##How to use it
 
