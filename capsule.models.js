@@ -199,7 +199,7 @@
       });
     },
     
-    // ###publishAdd
+    // ###publishRemove
     // Convert `remove` events to `publish` events for bubbling.
     publishRemove: function (model, collection) {
       this.trigger('publish', {

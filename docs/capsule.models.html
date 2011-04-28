@@ -174,7 +174,7 @@ through the model structure so those events can bubble.</p>             </td>   
         <span class="nx">collection</span><span class="o">:</span> <span class="nx">collection</span><span class="p">.</span><span class="nx">id</span>
       <span class="p">});</span>
     <span class="p">},</span>
-    </pre></div>             </td>           </tr>                               <tr id="section-19">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-19">&#182;</a>               </div>               <h3>publishAdd</h3>
+    </pre></div>             </td>           </tr>                               <tr id="section-19">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-19">&#182;</a>               </div>               <h3>publishRemove</h3>
 
 <p>Convert <code>remove</code> events to <code>publish</code> events for bubbling.</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="nx">publishRemove</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">model</span><span class="p">,</span> <span class="nx">collection</span><span class="p">)</span> <span class="p">{</span>
       <span class="k">this</span><span class="p">.</span><span class="nx">trigger</span><span class="p">(</span><span class="s1">&#39;publish&#39;</span><span class="p">,</span> <span class="p">{</span>
