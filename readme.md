@@ -13,15 +13,14 @@ It's essentially a set of convenience methods and additions to [@jashkenas](http
 
 ##Core assumptions are as follows:
 
-- All synced state is stored in a root model which is kept in memory on the server (yes, this is inefficient in some ways, but completely badass in others. Please don't tell me it won't scale we're also working on tying this into [@fritzy](http://twitter.com/fritzy)'s aweseome upcoming thoonk.js redis lib that will use redis for clustering/scaling).
+- All synced state is stored in a root model which is kept in memory on the server (yes, this is inefficient in some ways, but completely badass in others. Please don't tell me it won't scale we're also working on tying this into [@fritzy](http://twitter.com/fritzy)'s awesome upcoming thoonk.js redis lib that will use redis for clustering/scaling).
 - Several of the methods in `Capsule.View` assume that you're also using [ICanHaz.js](http://icanhazjs.com) and Mustache for your clientside templating.
 
 ##How to use it
 
-The following pages also serve as temporary API documentation of what the code is capable of. You should read these as well, before you attempt to use this:
+The annotated source serves as temporary API documentation of what the code is capable of. You should read it as well, before you attempt to use this:
 
-- [Capsule.models.js](http://andyet.github.com/Capsule/docs/capsule.models.html)
-- [Capsule.views.js](http://andyet.github.com/Capsule/docs/capsule.views.html)
+- [Capsule.js](http://andyet.github.com/Capsule/)
 
 Here's how you'd start building an app based on this method:
 
@@ -175,6 +174,7 @@ I'd love to get feedback and/or pull requests on this. Or, hit me up on twitter 
 
 ##Roadmap
 
+- Starting point/convenience methods for required server and client setups described above.
 - Scaling questions: One big limitation of this approach in its current state is scaling. This library will be converted to use [Thoonk.js](https://github.com/andyet/Thoonk.js) to leverage Redis's clustering and pub/sub capabilities as a back end.
 - Better handling of offline support/flaky connections: Potentially one could build a `changes` queue of events if the connection is lost and then send those on reconnect.
 - Better/easier way to handle security instead of having to validate each message outside of the model structure on the server.
