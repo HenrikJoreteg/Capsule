@@ -1,0 +1,37 @@
+{
+  "name": "capsule",
+  "version": "0.2",
+  "homepage": "https://github.com/andyet/Capsule",
+  "repository": {
+    "type": "git", 
+    "url": "git@github.com:andyet/Capsule.git"
+  },
+  "author": {
+    "name": "Henrik Joreteg", 
+    "url": "http://andyet.net/team/henrik", 
+    "email": "hjoreteg@gmail.com"
+  },
+  "contributors": [{
+    "name":"Nathan Vander Wilt", 
+    "email": "nate@andyet.net", 
+    "url":"http://cloudcartography.com"
+  }],
+  "description": "Realtime web framework for Backbone.js and Socket.io",
+  "licenses": [{
+    "type": "MIT", 
+    "url": "https://github.com/andyet/Capsule/blob/master/license-mit"
+  }],
+  "dependencies": {
+    "backbone": ">=0.3.3",
+    "underscore": ">=1.1.6",
+    "socket.io": "",
+    "node-uuid": ""
+  },
+  "main": "capsule",
+  "keywords": [
+    "realtime",
+    "backbone",
+    "socket.io",
+    "websocket"
+  ]
+}
