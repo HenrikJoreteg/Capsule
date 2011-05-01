@@ -6,9 +6,9 @@
   // namespace. Exported for both CommonJS and the browser.
   var Capsule, Backbone, _, uuid, server = false;
     if (typeof exports !== 'undefined') {
-      Backbone = require('./backbone');
+      Backbone = require('backbone');
       _ = require('underscore')._;
-      uuid = require('../packages/uuid');
+      uuid = require('node-uuid');
       Capsule = exports;
       server = true;
     } else {
