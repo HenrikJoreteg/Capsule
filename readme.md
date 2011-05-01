@@ -2,12 +2,15 @@
 
 Capsule is an experimental web framework by [@HenrikJoreteg](http://twitter.com/HenrikJoreteg) for Node.js that uses Socket.io and Backbone.js to synchronize model state by sharing model code between the client and the server.
 
+    $ npm install capsule
+
 MIT Licensed.
-
+    
 ##Introduction !important
-I'm releasing Capsule in it's current state as a demonstration of one possible way to build realtime web apps. I've used it (or a similar variety) of it for a couple of apps. One of which our team uses everyday.
 
-Capsule presents and experimental approach to building real-time web apps that re-uses the exact same models on the server as what you serve in a script tag in the html of your app. For more information on this approach see my blog post on [Re-using Backbone.js Models on the server with Node.js and Socket.io to build realtime apps](http://andyet.net/blog/2011/feb/15/re-using-backbonejs-models-on-the-server-with-node/). It's also something I will discuss it in my upcoming talk at [NodeConf 2011](http://nodeconf.com/).
+Capsule presents and experimental approach to building real-time web apps that re-uses the exact same models on the server as what you serve in a script tag in the html of your app. I've used this approach for a couple of apps, one of which our team uses everyday.
+
+For more information on this approach see my blog post on [Re-using Backbone.js Models on the server with Node.js and Socket.io to build realtime apps](http://andyet.net/blog/2011/feb/15/re-using-backbonejs-models-on-the-server-with-node/). It's also something I will discuss it in my upcoming talk at [NodeConf 2011](http://nodeconf.com/).
 
 It's essentially a set of convenience methods and additions to [@jashkenas](http://twitter.com/jashkenas)'s excellent [Backbone.js](http://documentcloud.github.com/backbone/) lib. In it's current state Capsule is a bit indulgent in that it makes quite a few assumptions about your app and could certainly stand to be more generic.
 
@@ -20,7 +23,7 @@ It's essentially a set of convenience methods and additions to [@jashkenas](http
 
 The annotated source serves as temporary API documentation of what the code is capable of. You should read it as well, before you attempt to use this:
 
-- [Capsule.js](http://andyet.github.com/Capsule/)
+- [capsule.js annotated source](http://andyet.github.com/Capsule/)
 
 Here's how you'd start building an app based on this method:
 
