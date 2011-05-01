@@ -90,6 +90,16 @@
       });
     },
     
+    // ###callServerMethod
+    // Send a method call event. To trigger a model method on the server (if allowed).
+    callServerMethod: function (method) {
+      socket.send({
+        event: 'method',
+        id: this.id,
+        method: method
+      });
+    },
+    
     // ###toTemplate
     // This is a replacement for simply sending Backbone's `toJSON` data to the template.
     // Since we're using [ICanHaz.js](http://icanhazjs.com) which uses Mustache, using
