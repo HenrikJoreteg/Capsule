@@ -34,10 +34,8 @@
     // We also bind change so to our `publishChange` method.
     register: function () {
       var self = this;
-      if (server) {
-        var id = uuid();
-        this.id = id;
-        this.set({id: id});
+      if (server && !this.get('id')) {
+        this.set({id: uuid()});
       }
       if (this.id && !Capsule.models[this.id]) Capsule.models[this.id] = this;
       this.bind('change:id', function (model) {
@@ -55,6 +53,7 @@
       this[label].bind('publish', _(this.publishProxy).bind(this));
       this[label].bind('remove', _(this.publishRemove).bind(this));
       this[label].bind('add', _(this.publishAdd).bind(this));
+      this[label].bind('move', _(this.publishMove).bind(this));
       this[label].parent = this;
     },
     
@@ -127,9 +126,8 @@
         settings = _({
           recurse: true
         }).extend(opt || {});
+      
       function process(targetObj, source) {
-        targetObj.id = source.id || null;
-        targetObj.cid = source.cid || null;
         targetObj.attrs = source.toJSON();
         _.each(source, function (value, key) {
           if (settings.recurse) {
@@ -141,7 +139,7 @@
               _.each(source[key].models, function (value, index) {
                 process(targetObj.collections[key].models[index] = {}, value);
               });
-            } else if (source[key] instanceof Backbone.Model && source[key].parent !== source) {
+            } else if (key !== 'parent' && source[key] instanceof Backbone.Model) {
               targetObj.models = targetObj.models || {};
               process(targetObj.models[key] = {}, value);
             }
@@ -156,7 +154,6 @@
     // Our deserializer. Reinflates the model structure with data created by the `xport` function above.
     mport: function (data, silent) {
       function process(targetObj, data) {
-        targetObj.id = data.id || null;
         targetObj.set(data.attrs, {silent: silent});
         if (data.collections) {
           _.each(data.collections, function (collection, name) {
@@ -187,7 +184,7 @@
     
     // ###publishChange
     // Creates a publish event of type `change` for bubbling up the tree.
-    publishChange: function (model, val, options, attr) {
+    publishChange: function (model) {
       if (model instanceof Backbone.Model) {
         this.trigger('publish', {
           event: 'change',
@@ -215,6 +212,17 @@
       this.trigger('publish', {
         event: 'remove',
         id: model.id
+      });
+    },
+    
+    // ###publishMove
+    // Publishes a `move` event.
+    publishMove: function (collection, id, newPosition) {
+      this.trigger('publish', {
+        event: 'move',
+        collection: collection.id,
+        id: id, 
+        newPosition: newPosition
       });
     },
     
@@ -267,6 +275,16 @@
         id: this.id,
         change: attrs
       });
+    },
+    
+    // ###unsetServer
+    // Unsets a given property
+    unsetServer: function(property) {
+      socket.send({
+        event: 'unset',
+        id: this.id,
+        property: property
+      });
     }
   });
   
@@ -280,11 +298,7 @@
     // ###register
     // Generates an `id` if on server and sets it in our reference hash.
     register: function () {
-      var self = this;
-      if (server) {
-        var id = uuid();
-        this.id = id;
-      }
+      if (server) this.id = uuid();
       if (this.id && !Capsule.models[this.id]) Capsule.models[this.id] = this;
     },
     
@@ -346,6 +360,27 @@
       return this.find(function (model) {
         return model.get(prop) === value;
       });
+    },
+    
+    // ###setAll
+    // Convenience for setting an attribute on all items in collection
+    setAll: function (obj) {
+      this.each(function (model) {
+        model.set(obj);
+      });
+      return this;
+    },
+    
+    // ###moveItem
+    // Calculate position and move to new position if not in right spot.
+    moveItem: function (id, newPosition) {
+      var model = this.get(id),
+        currPosition = _(this.models).indexOf(model);
+      if (currPosition !== newPosition) {
+        this.models.splice(currPosition, 1);
+        this.models.splice(newPosition, 0, model);
+        this.trigger('move', this, id, newPosition);
+      }
     }
   });
   
