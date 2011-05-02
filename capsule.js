@@ -312,6 +312,17 @@
       });
     },
     
+    // ###moveServer
+    // Send the `move` event
+    moveServer: function (id, newPosition) {
+      socket.send({
+        event: 'move',
+        collection: this.id,
+        id: id,
+        newPosition: newPosition
+      });
+    },
+    
     // ###registerRadioProperties
     // A convenience for creating `radio` properties where you can specify an
     // Array of properties in a collection and ensure that only model can have that

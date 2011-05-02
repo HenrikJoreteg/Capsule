@@ -272,7 +272,17 @@ on properties by supplying a <code>required</code> hash with property names and 
         <span class="nx">data</span><span class="o">:</span> <span class="nx">data</span>
       <span class="p">});</span>
     <span class="p">},</span>
-    </pre></div>             </td>           </tr>                               <tr id="section-31">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-31">&#182;</a>               </div>               <h3>registerRadioProperties</h3>
+    </pre></div>             </td>           </tr>                               <tr id="section-31">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-31">&#182;</a>               </div>               <h3>moveServer</h3>
+
+<p>Send the <code>move</code> event</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="nx">moveServer</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">id</span><span class="p">,</span> <span class="nx">newPosition</span><span class="p">)</span> <span class="p">{</span>
+      <span class="nx">socket</span><span class="p">.</span><span class="nx">send</span><span class="p">({</span>
+        <span class="nx">event</span><span class="o">:</span> <span class="s1">&#39;move&#39;</span><span class="p">,</span>
+        <span class="nx">collection</span><span class="o">:</span> <span class="k">this</span><span class="p">.</span><span class="nx">id</span><span class="p">,</span>
+        <span class="nx">id</span><span class="o">:</span> <span class="nx">id</span><span class="p">,</span>
+        <span class="nx">newPosition</span><span class="o">:</span> <span class="nx">newPosition</span>
+      <span class="p">});</span>
+    <span class="p">},</span>
+    </pre></div>             </td>           </tr>                               <tr id="section-32">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-32">&#182;</a>               </div>               <h3>registerRadioProperties</h3>
 
 <p>A convenience for creating <code>radio</code> properties where you can specify an
 Array of properties in a collection and ensure that only model can have that
@@ -305,21 +315,21 @@ radio property rule if it's already set.</p>             </td>             <td c
         <span class="p">});</span>
       <span class="p">}</span>
     <span class="p">},</span>
-    </pre></div>             </td>           </tr>                               <tr id="section-32">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-32">&#182;</a>               </div>               <h3>filterByProperty</h3>
+    </pre></div>             </td>           </tr>                               <tr id="section-33">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-33">&#182;</a>               </div>               <h3>filterByProperty</h3>
 
 <p>Shortcut for returning an array of models in the collection that have a certain <code>name</code> / <code>value</code>.</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="nx">filterByProperty</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">prop</span><span class="p">,</span> <span class="nx">value</span><span class="p">)</span> <span class="p">{</span>
       <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">filter</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">model</span><span class="p">)</span> <span class="p">{</span>
         <span class="k">return</span> <span class="nx">model</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">prop</span><span class="p">)</span> <span class="o">===</span> <span class="nx">value</span><span class="p">;</span>
       <span class="p">});</span>
     <span class="p">},</span>
-    </pre></div>             </td>           </tr>                               <tr id="section-33">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-33">&#182;</a>               </div>               <h3>findByProperty</h3>
+    </pre></div>             </td>           </tr>                               <tr id="section-34">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-34">&#182;</a>               </div>               <h3>findByProperty</h3>
 
 <p>Shortcut for finding first model in the collection with a certain <code>name</code> / <code>value</code>.</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="nx">findByProperty</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">prop</span><span class="p">,</span> <span class="nx">value</span><span class="p">)</span> <span class="p">{</span>
       <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">find</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">model</span><span class="p">)</span> <span class="p">{</span>
         <span class="k">return</span> <span class="nx">model</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">prop</span><span class="p">)</span> <span class="o">===</span> <span class="nx">value</span><span class="p">;</span>
       <span class="p">});</span>
     <span class="p">},</span>
-    </pre></div>             </td>           </tr>                               <tr id="section-34">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-34">&#182;</a>               </div>               <h3>setAll</h3>
+    </pre></div>             </td>           </tr>                               <tr id="section-35">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-35">&#182;</a>               </div>               <h3>setAll</h3>
 
 <p>Convenience for setting an attribute on all items in collection</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="nx">setAll</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">obj</span><span class="p">)</span> <span class="p">{</span>
       <span class="k">this</span><span class="p">.</span><span class="nx">each</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">model</span><span class="p">)</span> <span class="p">{</span>
@@ -327,7 +337,7 @@ radio property rule if it's already set.</p>             </td>             <td c
       <span class="p">});</span>
       <span class="k">return</span> <span class="k">this</span><span class="p">;</span>
     <span class="p">},</span>
-    </pre></div>             </td>           </tr>                               <tr id="section-35">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-35">&#182;</a>               </div>               <h3>moveItem</h3>
+    </pre></div>             </td>           </tr>                               <tr id="section-36">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-36">&#182;</a>               </div>               <h3>moveItem</h3>
 
 <p>Calculate position and move to new position if not in right spot.</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="nx">moveItem</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">id</span><span class="p">,</span> <span class="nx">newPosition</span><span class="p">)</span> <span class="p">{</span>
       <span class="kd">var</span> <span class="nx">model</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">id</span><span class="p">),</span>
@@ -339,9 +349,9 @@ radio property rule if it's already set.</p>             </td>             <td c
       <span class="p">}</span>
     <span class="p">}</span>
   <span class="p">});</span>
-  </pre></div>             </td>           </tr>                               <tr id="section-36">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-36">&#182;</a>               </div>               <h1>Capsule.View</h1>
+  </pre></div>             </td>           </tr>                               <tr id="section-37">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-37">&#182;</a>               </div>               <h1>Capsule.View</h1>
 
-<p>Adding some conveniences to the Backbone view.</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nx">Capsule</span><span class="p">.</span><span class="nx">View</span> <span class="o">=</span> <span class="nx">Backbone</span><span class="p">.</span><span class="nx">View</span><span class="p">.</span><span class="nx">extend</span><span class="p">({</span></pre></div>             </td>           </tr>                               <tr id="section-37">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-37">&#182;</a>               </div>               <h3>handleBindings</h3>
+<p>Adding some conveniences to the Backbone view.</p>             </td>             <td class="code">               <div class="highlight"><pre>  <span class="nx">Capsule</span><span class="p">.</span><span class="nx">View</span> <span class="o">=</span> <span class="nx">Backbone</span><span class="p">.</span><span class="nx">View</span><span class="p">.</span><span class="nx">extend</span><span class="p">({</span></pre></div>             </td>           </tr>                               <tr id="section-38">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-38">&#182;</a>               </div>               <h3>handleBindings</h3>
 
 <p>This makes it simple to bind model attributes to the view.
 To use it, add a <code>classBindings</code> and/or a <code>contentBindings</code> attribute
@@ -391,7 +401,7 @@ a complete attribute-bound views with just this:</p>
       <span class="p">}</span>
       <span class="k">return</span> <span class="k">this</span><span class="p">;</span>
     <span class="p">},</span>
-    </pre></div>             </td>           </tr>                               <tr id="section-38">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-38">&#182;</a>               </div>               <h3>desist</h3>
+    </pre></div>             </td>           </tr>                               <tr id="section-39">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-39">&#182;</a>               </div>               <h3>desist</h3>
 
 <p>This is method we used to remove/unbind/destroy the view.
 By default we fade it out this seemed like a reasonable default for realtime apps. 
@@ -415,7 +425,7 @@ it's going away. You can also pass an options hash <code>{quick: true}</code> to
         <span class="p">);</span>
       <span class="p">}</span>
     <span class="p">},</span>
-    </pre></div>             </td>           </tr>                               <tr id="section-39">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-39">&#182;</a>               </div>               <h3>addReferences</h3>
+    </pre></div>             </td>           </tr>                               <tr id="section-40">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-40">&#182;</a>               </div>               <h3>addReferences</h3>
 
 <p>This is a shortcut for adding reference to specific elements within your view for
 access later. This is avoids excessive DOM queries and gives makes it easier to update
@@ -441,7 +451,7 @@ In your <code>render</code> method. Use it like so:</p>
         <span class="k">this</span><span class="p">[</span><span class="s1">&#39;$&#39;</span> <span class="o">+</span> <span class="nx">item</span><span class="p">]</span> <span class="o">=</span> <span class="nx">$</span><span class="p">(</span><span class="nx">hash</span><span class="p">[</span><span class="nx">item</span><span class="p">],</span> <span class="k">this</span><span class="p">.</span><span class="nx">el</span><span class="p">);</span>
       <span class="p">}</span>
     <span class="p">},</span>
-    </pre></div>             </td>           </tr>                               <tr id="section-40">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-40">&#182;</a>               </div>               <h3>autoSetInputs</h3>
+    </pre></div>             </td>           </tr>                               <tr id="section-41">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-41">&#182;</a>               </div>               <h3>autoSetInputs</h3>
 
 <p>Convenience for automagically setting all input values on the server
 as-you-type. This is letter-by-letter syncing. You have to be careful with this
@@ -456,7 +466,7 @@ tells us which property the input corresponds to. For example:</p>
 will be sent to the server as you type.</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="nx">autoSetInputs</span><span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
       <span class="k">this</span><span class="p">.</span><span class="nx">$</span><span class="p">(</span><span class="s1">&#39;:input&#39;</span><span class="p">).</span><span class="nx">bind</span><span class="p">(</span><span class="s1">&#39;input&#39;</span><span class="p">,</span> <span class="nx">_</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">genericKeyUp</span><span class="p">).</span><span class="nx">bind</span><span class="p">(</span><span class="k">this</span><span class="p">));</span>
     <span class="p">},</span>
-    </pre></div>             </td>           </tr>                               <tr id="section-41">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-41">&#182;</a>               </div>               <h3>genericKeyUp</h3>
+    </pre></div>             </td>           </tr>                               <tr id="section-42">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-42">&#182;</a>               </div>               <h3>genericKeyUp</h3>
 
 <p>This is handy if you want to add any sort of as-you-type syncing
 this is obviously traffic heavy, use wth caution.</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="nx">genericKeyUp</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="p">{</span>
@@ -467,7 +477,7 @@ this is obviously traffic heavy, use wth caution.</p>             </td>         
       <span class="nx">res</span><span class="p">[</span><span class="nx">type</span> <span class="o">=</span> <span class="nx">target</span><span class="p">.</span><span class="nx">data</span><span class="p">(</span><span class="s1">&#39;type&#39;</span><span class="p">)]</span> <span class="o">=</span> <span class="nx">target</span><span class="p">.</span><span class="nx">val</span><span class="p">();</span>
       <span class="k">this</span><span class="p">.</span><span class="nx">model</span><span class="p">.</span><span class="nx">setServer</span><span class="p">(</span><span class="nx">res</span><span class="p">);</span>
     <span class="p">},</span>
-    </pre></div>             </td>           </tr>                               <tr id="section-42">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-42">&#182;</a>               </div>               <h3>basicRender</h3>
+    </pre></div>             </td>           </tr>                               <tr id="section-43">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-43">&#182;</a>               </div>               <h3>basicRender</h3>
 
 <p>All the usual stuff when I render a view. It assumes that the view has a <code>template</code> property
 that is the name of the ICanHaz template. You can also specify the template name by passing
@@ -482,7 +492,7 @@ it an options hash like so: <code>{templateKey: 'profile'}</code>.</p>          
       <span class="k">this</span><span class="p">.</span><span class="nx">handleBindings</span><span class="p">();</span>
       <span class="k">this</span><span class="p">.</span><span class="nx">delegateEvents</span><span class="p">();</span>
     <span class="p">},</span>
-    </pre></div>             </td>           </tr>                               <tr id="section-43">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-43">&#182;</a>               </div>               <h3>subViewRender</h3>
+    </pre></div>             </td>           </tr>                               <tr id="section-44">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-44">&#182;</a>               </div>               <h3>subViewRender</h3>
 
 <p>This is handy for views within collections when you use <code>collectomatic</code>. Just like <code>basicRender</code> it assumes
 that the view either has a <code>template</code> property or that you pass it an options object with the name of the 
@@ -504,7 +514,7 @@ If your collections is stacked newest first, just use <code>{plaement: 'prepend'
       <span class="k">this</span><span class="p">.</span><span class="nx">el</span> <span class="o">=</span> <span class="nx">newEl</span><span class="p">;</span>
       <span class="k">this</span><span class="p">.</span><span class="nx">delegateEvents</span><span class="p">();</span>
     <span class="p">},</span>
-    </pre></div>             </td>           </tr>                               <tr id="section-44">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-44">&#182;</a>               </div>               <h2>Binding Utilities (thanks to <a href="http://andyet.net/team/nate/">@natevw</a>)</h2>
+    </pre></div>             </td>           </tr>                               <tr id="section-45">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-45">&#182;</a>               </div>               <h2>Binding Utilities (thanks to <a href="http://andyet.net/team/nate/">@natevw</a>)</h2>
 
 <h3>bindomatic</h3>
 
@@ -524,14 +534,14 @@ It also adds the function to an array of functions to unbind if the view is dest
         <span class="p">});</span>
       <span class="p">});</span>
     <span class="p">},</span>
-    </pre></div>             </td>           </tr>                               <tr id="section-45">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-45">&#182;</a>               </div>               <h3>unbindomatic</h3>
+    </pre></div>             </td>           </tr>                               <tr id="section-46">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-46">&#182;</a>               </div>               <h3>unbindomatic</h3>
 
 <p>Unbinds all the handlers in the unbindomatic list from the model.</p>             </td>             <td class="code">               <div class="highlight"><pre>    <span class="nx">unbindomatic</span><span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
       <span class="nx">_</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">unbindomatic_list</span> <span class="o">||</span> <span class="p">[]).</span><span class="nx">each</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">unbind</span><span class="p">)</span> <span class="p">{</span>
         <span class="nx">unbind</span><span class="p">();</span>
       <span class="p">});</span>
     <span class="p">},</span>
-    </pre></div>             </td>           </tr>                               <tr id="section-46">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-46">&#182;</a>               </div>               <h3>collectomatic</h3>
+    </pre></div>             </td>           </tr>                               <tr id="section-47">             <td class="docs">               <div class="pilwrap">                 <a class="pilcrow" href="#section-47">&#182;</a>               </div>               <h3>collectomatic</h3>
 
 <p>Shorthand for rendering collections and their invividual views.
 Just pass it the collection, and the view to use for the items in the
