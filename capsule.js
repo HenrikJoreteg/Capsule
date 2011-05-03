@@ -166,8 +166,8 @@
             targetObj[name].id = collection.id;
             Capsule.models[collection.id] = targetObj[name];
             _.each(collection.models, function (modelData, index) {
-              var newObj = targetObj[name]._add({}, {silent: silent});
-              process(newObj, modelData);
+              var nextObject = targetObj[name].get(modelData.attrs.id) || targetObj[name]._add({}, {silent: silent});
+              process(nextObject, modelData);
             });
           });
         }
