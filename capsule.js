@@ -4,7 +4,12 @@
 
   // All public Capsule classes and modules will be attached to the `Capsule` 
   // namespace. Exported for both CommonJS and the browser.
-  var Capsule, Backbone, _, uuid, server = false;
+  var Capsule,
+    server = false,
+    Backbone,
+    _,
+    uuid;
+    
     if (typeof exports !== 'undefined') {
       Backbone = require('backbone');
       _ = require('underscore')._;
@@ -14,6 +19,7 @@
     } else {
       Backbone = this.Backbone;
       _ = this._;
+      
       Capsule = this.Capsule || (this.Capsule = {});
     }
   
@@ -269,7 +275,7 @@
     
     // ###setServer
     // Our server version of the normal `set` method. Takes a hash of attributes
-    setServer: function(attrs, options) {
+    setServer: function(attrs) {
       socket.send({
         event: 'set',
         id: this.id,
