@@ -79,8 +79,16 @@
     },
     
     // ###toggle
-    // checks and toggles boolean properties on the server.
+    // checks and toggles boolean properties.
     toggle: function (attrName) {
+      var change = {};
+      change[attrName] = !(this.get(attrName));
+      this.set(change);
+    },
+    
+    // ###toggleServer
+    // checks and toggles boolean properties on the server.
+    toggleServer: function (attrName) {
       var change = {};
       change[attrName] = !(this.get(attrName));
       this.setServer(change);
@@ -568,6 +576,7 @@
         $(this.el).replaceWith(newEl);
       }
       this.el = newEl;
+      this.handleBindings();
       this.delegateEvents();
     },
     
