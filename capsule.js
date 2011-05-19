@@ -614,9 +614,10 @@
     // collection. (anything in the `options` arg just gets passed through to
     // view. Again, props to @natevw for this.
     collectomatic: function (collection, ViewClass, options) {
-      var views = {};
+      var views = {}, self = this;
       this.bindomatic(collection, 'add', function (model) {
         views[model.cid] = new ViewClass(_({model: model}).extend(options));
+        views[model.cid].parent = self;
       });
       this.bindomatic(collection, 'remove', function (model) {
         views[model.cid].desist();
@@ -629,6 +630,7 @@
         views = {};
         collection.each(function (model) {
           views[model.cid] = new ViewClass(_({model: model}).extend(options));
+          views[model.cid].parent = self;
         });
       }, {trigger: true});
       this.bindomatic(collection, 'move', function () {
@@ -638,6 +640,7 @@
         views = {};
         collection.each(function (model) {
           views[model.cid] = new ViewClass(_({model: model}).extend(options));
+          views[model.cid].parent = self;
         });
       });
     }
