@@ -469,7 +469,7 @@
       if (currPosition !== newPosition) {
         this.models.splice(currPosition, 1);
         this.models.splice(newPosition, 0, model);
-        this.trigger('move', this, id, newPosition);
+        model.trigger('move', this, id, newPosition);
       }
     }
   });

@@ -418,7 +418,7 @@ so we can track who's messing with the system... and boot 'em :)</p>            
       <span class="k">if</span> <span class="p">(</span><span class="nx">currPosition</span> <span class="o">!==</span> <span class="nx">newPosition</span><span class="p">)</span> <span class="p">{</span>
         <span class="k">this</span><span class="p">.</span><span class="nx">models</span><span class="p">.</span><span class="nx">splice</span><span class="p">(</span><span class="nx">currPosition</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>
         <span class="k">this</span><span class="p">.</span><span class="nx">models</span><span class="p">.</span><span class="nx">splice</span><span class="p">(</span><span class="nx">newPosition</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="nx">model</span><span class="p">);</span>
-        <span class="k">this</span><span class="p">.</span><span class="nx">trigger</span><span class="p">(</span><span class="s1">&#39;move&#39;</span><span class="p">,</span> <span class="k">this</span><span class="p">,</span> <span class="nx">id</span><span class="p">,</span> <span class="nx">newPosition</span><span class="p">);</span>
+        <span class="nx">model</span><span class="p">.</span><span class="nx">trigger</span><span class="p">(</span><span class="s1">&#39;move&#39;</span><span class="p">,</span> <span class="k">this</span><span class="p">,</span> <span class="nx">id</span><span class="p">,</span> <span class="nx">newPosition</span><span class="p">);</span>
       <span class="p">}</span>
     <span class="p">}</span>
   <span class="p">});</span>
