@@ -78,6 +78,34 @@
       return Capsule.models[id];
     },
     
+    // ###safeSet
+    // This should be used whenever getting changes from the browser since we 
+    // can't trust the source. This checks to see if the properties being set
+    // are in the `clientEditable` property of your model.
+    // Also, `id`s can never be chaned with a safeSet.
+    safeSet: function (attrs, user, errorCallback) {
+      var self = this;
+      _.each(attrs, function (value, key) {
+        if (key !== 'id' && _(self.clientEditable).contains(key) && self.canEdit(user)) {
+          self.set(attrs);
+        } else {
+          if (_.isFunction(errorCallback)) errorCallback('set', user, attrs);
+        }
+      });
+    },
+    
+    // ###safeDelete
+    // This should be used whenever getting a delete command from the browser since we 
+    // can't trust the source. This checks for `immutable` properties in your models 
+    // that can only be set once.
+    safeDelete: function (user, errorCallback) {
+      if (this.canEdit(user) && this.collection) {
+        this.collection.remove(this);
+      } else {
+        if (_.isFunction(errorCallback)) errorCallback('delete', user, this);  
+      }
+    },
+    
     // ###toggle
     // checks and toggles boolean properties.
     toggle: function (attrName) {
@@ -299,6 +327,17 @@
         id: this.id,
         property: property
       });
+    },
+    
+    // ###safeCall
+    // Checks to make sure a method is explicitly exposed and that the user canEdit the object
+    // and the executes the method.
+    safeCall: function (method, user, errorCallback) {
+      if (this.exposedServerMethods && this.exposedServerMethods.indexOf(method) !== -1 && this.canEdit(user)) {
+        this[method]();
+      } else {
+        if (_.isFunction(errorCallback)) errorCallback('call', user, method, this);
+      }
     }
   });
   
@@ -314,6 +353,21 @@
     register: function () {
       if (server) this.id = uuid();
       if (this.id && !Capsule.models[this.id]) Capsule.models[this.id] = this;
+    },
+    
+    // ###safeAdd
+    // Is used to add items to the collection from an untrusted source (the client)
+    // it inits the collection's model type. Sets the supplied properties on that new
+    // empty object using `safeSet` passing it the error callback. If that works it 
+    // will see if it passes the collection's `canAdd` test and add it.
+    safeAdd: function (attrs, user, errorCallback) {
+      var newObj = new this.model();
+      if (this.canAdd(user)) {
+        newObj.safeSet(attrs, user, errorCallback);
+        this.add(newObj);
+      } else {
+        if (_.isFunction(errorCallback)) errorCallback('add', user, objectProperties, this);  
+      }
     },
     
     // ###addServer
@@ -394,6 +448,17 @@
         model.set(obj);
       });
       return this;
+    },
+    
+    // ###safeMove
+    // the "I don't trust you" version of the move command which takes an error callback
+    // so we can track who's messing with the system... and boot 'em :)
+    safeMove: function (id, newPosition, user, errorCallback) {
+      if (this.canMove(user)) {
+        this.moveItem(id, newPosition);
+      } else {
+        if (_.isFunction(errorCallback)) errorCallback('move', user, id, newPosition);  
+      }
     },
     
     // ###moveItem
