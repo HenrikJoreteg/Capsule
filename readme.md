@@ -183,4 +183,12 @@ I'd love to get feedback and/or pull requests on this. Or, hit me up on twitter 
 - Better/easier way to handle security instead of having to validate each message outside of the model structure on the server.
 - Full sample app (I've built stuff with this, but not opensourceable apps)
 - More awesome
-- Test suite
+
+
+##Change Log
+- 0.2.2 
+  - fixed bug in error callback code
+  - added support for `templateHelpers` in views
+  - improved test for enviroment (server/client)
+  - better handling if used as CommonJS module in a browser
+

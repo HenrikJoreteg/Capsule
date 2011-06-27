@@ -5,7 +5,6 @@
   // All public Capsule classes and modules will be attached to the `Capsule` 
   // namespace. Exported for both CommonJS and the browser.
   var Capsule,
-    server = false,
     Backbone,
     _,
     uuid;
@@ -15,13 +14,15 @@
       _ = require('underscore')._;
       uuid = require('node-uuid');
       Capsule = exports;
-      server = true;
     } else {
       Backbone = this.Backbone;
       _ = this._;
       
       Capsule = this.Capsule || (this.Capsule = {});
     }
+  
+  // Flag so we know if we're on the server or not
+  Capsule.server = (typeof window == 'undefined');
   
   // Our model hash, this is where all instantiated models are stored by id
   Capsule.models = {};
@@ -40,7 +41,7 @@
     // We also bind change so to our `publishChange` method.
     register: function () {
       var self = this;
-      if (server && !this.get('id')) {
+      if (Capsule.server && !this.get('id')) {
         this.set({id: uuid()});
       }
       if (this.id && !Capsule.models[this.id]) Capsule.models[this.id] = this;
@@ -351,7 +352,7 @@
     // ###register
     // Generates an `id` if on server and sets it in our reference hash.
     register: function () {
-      if (server) this.id = uuid();
+      if (Capsule.server) this.id = uuid();
       if (this.id && !Capsule.models[this.id]) Capsule.models[this.id] = this;
     },
     
@@ -366,7 +367,7 @@
         newObj.safeSet(attrs, user, errorCallback);
         this.add(newObj);
       } else {
-        if (_.isFunction(errorCallback)) errorCallback('add', user, objectProperties, this);  
+        if (_.isFunction(errorCallback)) errorCallback('add', user, attrs, this);  
       }
     },
     
@@ -614,11 +615,26 @@
       _.defaults(opts, {
           templateKey: this.template
       });
-      var newEl = ich[opts.templateKey](this.model.toTemplate());
+      var newEl = ich[opts.templateKey](this.addViewMixins(this.model.toTemplate()));
       $(this.el).replaceWith(newEl);
       this.el = newEl;
       this.handleBindings();
       this.delegateEvents();
+    },
+    
+    // ###addViewMixins
+    // Makes it possible for the view to definte `templateHelpers` array of functions
+    // that will be sent to the mustache template for rendering. Great for formatting etc
+    // especially when it's specific to that view and doesn't really belong in your model code.
+    addViewMixins: function (obj) {
+      var self = this;
+      if (this.templateHelpers) {
+        _.each(this.templateHelpers, function (val) {
+          obj[val] = _.bind(self[val], self);
+        });
+        obj.team();
+      }
+      return obj;
     },
     
     // ###subViewRender
@@ -634,7 +650,7 @@
           placement: 'append',
           templateKey: this.template
       });
-      var newEl = ich[opts.templateKey](this.model.toTemplate())[0];
+      var newEl = ich[opts.templateKey](this.addViewMixins(this.model.toTemplate()))[0];
       if (!this.el.parentNode) {
         $(this.containerEl)[opts.placement](newEl);
       } else {
