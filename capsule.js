@@ -7,11 +7,15 @@
   var Capsule,
     Backbone,
     _,
-    uuid;
+    uuid,
+    Thoonk,
+    thoonk;
     
     if (typeof exports !== 'undefined') {
       Backbone = require('backbone');
       _ = require('underscore')._;
+      Thoonk = require('thoonk').Thoonk;
+      thoonk = new Thoonk();
       uuid = require('node-uuid');
       Capsule = exports;
     } else {
@@ -126,17 +130,13 @@
     // ###deleteServer
     // Sends delete event for `id` to server.
     deleteServer: function () {
-      socket.send({
-        event: 'delete',
-        id: this.id
-      });
+      socket.emit('delete', { id: this.id });
     },
     
     // ###callServerMethod
     // Send a method call event. To trigger a model method on the server (if allowed).
     callServerMethod: function (method) {
-      socket.send({
-        event: 'method',
+      socket.emit('method call', {
         id: this.id,
         method: method
       });
@@ -313,8 +313,7 @@
     // ###setServer
     // Our server version of the normal `set` method. Takes a hash of attributes
     setServer: function(attrs) {
-      socket.send({
-        event: 'set',
+      socket.emit('set', {
         id: this.id,
         change: attrs
       });
@@ -323,8 +322,7 @@
     // ###unsetServer
     // Unsets a given property
     unsetServer: function(property) {
-      socket.send({
-        event: 'unset',
+      socket.emit('unset', {
         id: this.id,
         property: property
       });
@@ -352,7 +350,27 @@
     // ###register
     // Generates an `id` if on server and sets it in our reference hash.
     register: function () {
-      if (Capsule.server) this.id = uuid();
+      if (Capsule.server) {
+          var self = this;
+          this.id = uuid();
+          this.feed = thoonk.create(this.type + ':' + this.type, {max_length: this.maxLength});
+          this.feed.subscribe(
+              function (id, item) {
+                  // add
+                  console.log('args and this', arguments, this, this === self.feed);
+                  self.feed();
+              },
+              function () {
+                  // edit
+              },
+              function () {
+                  // retract
+              },
+              function () {
+                  // move
+              }
+          );
+      }
       if (this.id && !Capsule.models[this.id]) Capsule.models[this.id] = this;
     },
     
@@ -374,8 +392,7 @@
     // ###addServer
     // The server version of backbone's `add` method.
     addServer: function (data) {
-      socket.send({
-        event: 'add',
+      socket.emit('add', {
         id: this.id,
         data: data
       });
@@ -384,8 +401,7 @@
     // ###moveServer
     // Send the `move` event
     moveServer: function (id, newPosition) {
-      socket.send({
-        event: 'move',
+      socket.emit('move', {
         collection: this.id,
         id: id,
         newPosition: newPosition
