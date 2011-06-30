@@ -4,6 +4,7 @@ capsule = require('../capsule');
 
 var Person = capsule.Model.extend({
     type: 'person',
+    lists: ['nicknames'],
     exposedServerMethods: ['dance'],
     initialize: function () {
         this.register();
@@ -240,4 +241,31 @@ exports.testSafeCall = function (test) {
         test.equal(model, u);
         test.done();
     });
+};
+
+exports.testListProperties = function (test) {
+    var person = new Person(),
+        arr = ['first', 'second'];
+    
+    person.set({nicknames: arr});
+    
+    test.equal('object', typeof person.get('nicknames'));
+    test.equal('string', typeof person.attributes.nicknames);
+    
+    test.ok(person.get('nicknames') !== person.get('nicknames'), "should not refer to the same array");
+    test.deepEqual(person.get('nicknames'), person.get('nicknames'), "but should be deep equal");
+    
+    person.bind('change:nicknames', function (model, val) {
+        test.ok(typeof val === 'string');
+        test.equal(val, '["something","first","second"]');
+        test.done();
+    });
+    
+    person.set({nicknames: arr});
+    
+    arr.unshift('something');
+    
+    // this is just so we can see 
+    test.ok(true);
+    person.set({nicknames: arr});
 };
