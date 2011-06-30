@@ -22,7 +22,7 @@
     }
   
   // Flag so we know if we're on the server or not
-  Capsule.server = (typeof window == 'undefined');
+  Capsule.server = (typeof window === 'undefined');
   
   // Our model hash, this is where all instantiated models are stored by id
   Capsule.models = {};
@@ -65,13 +65,13 @@
     // ###set
     set: function (attrs, option) {
       if (this.lists) {
-        for (a in attrs) {
+        for (var a in attrs) {
           if (_(this.lists).contains(a)) {
             attrs[a] = JSON.stringify(attrs[a]);
           }
         }
       }
-      Backbone.Model.prototype.set.call(this, attrs, option);
+      return Backbone.Model.prototype.set.call(this, attrs, option);
     },
     
     // ###addChildCollection
