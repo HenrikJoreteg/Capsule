@@ -51,6 +51,29 @@
       this.bind('change', _(this.publishChange).bind(this));
     },
     
+    // ###get
+    // We override `set` and `get` so we can specify a lists of properties that are
+    // so we can handle properties that are arrays. We override `set` so we get change events properly for arrays
+    get: function (attr) {
+      if (_(this.lists).contains(attr)) {
+        return JSON.parse(this.attributes[attr]);
+      } else {
+        return this.attributes[attr];
+      }
+    },
+    
+    // ###set
+    set: function (attrs, option) {
+      if (this.lists) {
+        for (a in attrs) {
+          if (_(this.lists).contains(a)) {
+            attrs[a] = JSON.stringify(attrs[a]);
+          }
+        }
+      }
+      Backbone.Model.prototype.set.call(this, attrs, option);
+    },
+    
     // ###addChildCollection
     // We use this to build our nested model structure. This will ensure
     // that `publish`, `add`, and `remove` events will bubble up to our root
@@ -126,17 +149,13 @@
     // ###deleteServer
     // Sends delete event for `id` to server.
     deleteServer: function () {
-      socket.send({
-        event: 'delete',
-        id: this.id
-      });
+      socket.emit('delete', { id: this.id });
     },
     
     // ###callServerMethod
     // Send a method call event. To trigger a model method on the server (if allowed).
     callServerMethod: function (method) {
-      socket.send({
-        event: 'method',
+      socket.emit('method call', {
         id: this.id,
         method: method
       });
@@ -313,8 +332,7 @@
     // ###setServer
     // Our server version of the normal `set` method. Takes a hash of attributes
     setServer: function(attrs) {
-      socket.send({
-        event: 'set',
+      socket.emit('set', {
         id: this.id,
         change: attrs
       });
@@ -323,8 +341,7 @@
     // ###unsetServer
     // Unsets a given property
     unsetServer: function(property) {
-      socket.send({
-        event: 'unset',
+      socket.emit('unset', {
         id: this.id,
         property: property
       });
@@ -374,8 +391,7 @@
     // ###addServer
     // The server version of backbone's `add` method.
     addServer: function (data) {
-      socket.send({
-        event: 'add',
+      socket.emit('add', {
         id: this.id,
         data: data
       });
@@ -384,8 +400,7 @@
     // ###moveServer
     // Send the `move` event
     moveServer: function (id, newPosition) {
-      socket.send({
-        event: 'move',
+      socket.emit('move', {
         collection: this.id,
         id: id,
         newPosition: newPosition
