@@ -715,13 +715,13 @@
         views[model.cid] = new ViewClass(_({model: model}).extend(options));
         views[model.cid].parent = self;
       });
-      this.bindomatic(collection, 'remove', function (model) {
-        views[model.cid].desist();
+      this.bindomatic(collection, 'remove', function (model, collection, opts) {
+        views[model.cid].desist(opts);
         delete views[model.cid];
       });
-      this.bindomatic(collection, 'refresh', function () {
+      this.bindomatic(collection, 'refresh', function (opts) {
         _(views).each(function (view) {
-          view.desist();
+          view.desist(opts);
         });
         views = {};
         collection.each(function (model) {
