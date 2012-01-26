@@ -556,7 +556,6 @@
       }
       if (opts.quick) {
         $(this.el).unbind().remove();
-        this.unbindomatic();
       } else {
         $(this.el).animate({
             height: 0,
@@ -564,10 +563,10 @@
           },
           function () {
             $(this).unbind().remove();
-            this.unbindomatic();
           }
         );
       }
+      this.unbindomatic();
     },
     
     // ###addReferences
